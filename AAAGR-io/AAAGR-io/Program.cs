@@ -1,10 +1,14 @@
-﻿namespace AAAGR_io
+﻿using Ping_pong;
+
+namespace AAAGR_io
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            Game game = new Game();
+
+            game.StartGame();
         }
     }
 }
