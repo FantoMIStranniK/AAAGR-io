@@ -37,8 +37,8 @@ namespace AAAGR_io
 
             Random rand = new Random();
 
-            int playerX = rand.Next(100, (int)Render.width);
-            int playerY = rand.Next(100, (int)Render.height);
+            int playerX = rand.Next(100, (int)Render.width - 100);
+            int playerY = rand.Next(100, (int)Render.height - 100);
 
             body.Position = new Vector2f(playerX, playerY);
         }
@@ -55,8 +55,10 @@ namespace AAAGR_io
         {
             base.Eat(food);
 
-            if(food.tag is "food")
+            if (food.tag is "food")
                 mass += (food.mass * 0.2f) / mass;
+            else
+                mass += food.mass * 0.5f;
 
             food.Destroy();
         }

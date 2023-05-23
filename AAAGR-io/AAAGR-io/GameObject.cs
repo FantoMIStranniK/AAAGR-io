@@ -31,7 +31,7 @@ namespace AAAGR_io
             var thisBounds = thisShape.GetGlobalBounds();
             var collidedShapeBounds = collided.UniversalShape.GetGlobalBounds();
 
-            if (thisBounds.Intersects(collidedShapeBounds) && mass > collided.mass)
+            if (thisBounds.Intersects(collidedShapeBounds) && mass > collided.mass && !Utilities.ApproximatelyEqual(mass, collided.mass))
                 Eat(collided);
         }
         public virtual void GetInput(){}

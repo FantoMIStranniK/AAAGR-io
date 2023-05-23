@@ -25,5 +25,9 @@ namespace AAAGR_io
 
             return colors[rand.Next(colors.Count)];
         }
+        public static bool ApproximatelyEqual(float a, float b)
+        {
+            return MathF.Abs(a - b) <= 0.5f;
+        }
     }
 }
