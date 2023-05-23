@@ -25,6 +25,7 @@ namespace AAAGR_io
 
             tag = "food";
         }
+
         public override void Awake()
         {
             base.Awake();

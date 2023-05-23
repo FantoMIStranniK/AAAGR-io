@@ -1,4 +1,5 @@
-﻿using SFML.System;
+﻿using SFML.Graphics;
+using SFML.System;
 
 namespace AAAGR_io
 {
@@ -7,22 +8,21 @@ namespace AAAGR_io
     {
         public static Dictionary<string, GameObject> Entities =new Dictionary<string, GameObject>();
 
+        //Food values
         private static int neededFoodCount = 0; 
         private static int countOfFoodPoints = 35;
-        private static int playerSpawnX;
-        private static int playerSpawnY;
+        private static int countOfOtherPlayers = 5;
 
         public static void InitSpawn()
         {
-            Random rand = new Random();
-
-            playerSpawnX = rand.Next(0, (int)Render.width);
-            playerSpawnY = rand.Next(0, (int)Render.height);
-
-            CreatePlayer();
+            //Create main player
+            CreatePlayer(false, Color.Magenta);
 
             for(int i = 0; i < countOfFoodPoints; i++)
                 SpawnFood();
+
+            for(int i = 0; i < countOfOtherPlayers; i++)
+                CreatePlayer(true, Utilities.GetRandomColor());
         }
         public static void OnFoodDecreased()
         {
@@ -41,15 +41,8 @@ namespace AAAGR_io
         {
             Random rand = new Random();
 
-            int foodCordY = 0;
-            int foodCordX = 0;
-
-            do
-            {
-                foodCordX = rand.Next(75, (int)Render.width - 75);
-                foodCordY = rand.Next(75, (int)Render.height - 75);
-            }
-            while (!Utilities.IsValidCoordinate(foodCordX, Render.width) || !Utilities.IsValidCoordinate(foodCordY, Render.height));
+            int foodCordX = rand.Next(75, (int)Render.width - 75);
+            int foodCordY = rand.Next(75, (int)Render.height - 75);
 
             string foodName = "Food" + FreeNames.GetFreeFoodIndex().ToString();
 
@@ -59,13 +52,11 @@ namespace AAAGR_io
 
             Entities.Add(foodName, newFood);
         }
-        private static void CreatePlayer()
+        private static void CreatePlayer(bool isAI, Color color)
         {
             string playerName = "player" + FreeNames.GetFreePlayerIndex().ToString();
 
-            Eater player = new Eater(false, 1.5f, playerName);
-
-            player.UniversalShape.Position = new Vector2f(playerSpawnX, playerSpawnY);
+            Eater player = new Eater(isAI, 1.5f, playerName, color);
 
             Entities.Add(playerName, player);
         }

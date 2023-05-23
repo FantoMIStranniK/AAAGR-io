@@ -10,7 +10,7 @@ namespace AAAGR_io
 
         private CircleShape body;
 
-        public Eater(bool isAi, float mass, string name) 
+        public Eater(bool isAi, float mass, string name, Color color) 
         {
             IsAI = isAi;
 
@@ -20,7 +20,7 @@ namespace AAAGR_io
 
             UniversalShape = body;
 
-            body.FillColor = Color.Magenta;
+            body.FillColor = color;
             body.OutlineColor = Color.Black;
             body.OutlineThickness = 6;
 
@@ -29,11 +29,18 @@ namespace AAAGR_io
             tag = "Eater";
             this.name = name;
         }
+
+        #region Overrides
         public override void Awake()
         {
             base.Awake();
 
-            body.Position = new Vector2f(Render.width / 2, Render.height / 2);
+            Random rand = new Random();
+
+            int playerX = rand.Next(100, (int)Render.width);
+            int playerY = rand.Next(100, (int)Render.height);
+
+            body.Position = new Vector2f(playerX, playerY);
         }
         public override void GetInput()
         {
@@ -57,6 +64,8 @@ namespace AAAGR_io
         {
             UniversalShape.Scale = new Vector2f(mass, mass);
         }
+        #endregion
+
         #region HumanInput
         private void HumanInput()
         {

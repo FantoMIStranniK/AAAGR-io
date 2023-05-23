@@ -4,6 +4,7 @@ namespace AAAGR_io
 {
     public abstract class GameObject : IEat, IMovement, IControllable
     {
+        #region Mass
         public float mass
         {
             get
@@ -17,13 +18,14 @@ namespace AAAGR_io
             }
         }
         private float _mass = 1;
+        #endregion
 
         public string tag { get; protected set; } = " " ;
         public string name { get; protected set; } = " ";
 
         public Shape UniversalShape { get; protected set; }
 
-        public virtual void GetInput(){}
+        #region Methods
         public void TryEat(Shape thisShape, GameObject collided)
         {
             var thisBounds = thisShape.GetGlobalBounds();
@@ -32,6 +34,7 @@ namespace AAAGR_io
             if (thisBounds.Intersects(collidedShapeBounds) && mass > collided.mass)
                 Eat(collided);
         }
+        public virtual void GetInput(){}
         public virtual void Eat(GameObject food){}
         public virtual void Move(){}
         public virtual void Awake(){}
@@ -46,6 +49,7 @@ namespace AAAGR_io
             if (tag is "food")
                 Spawn.OnFoodDecreased();
         }
-        protected virtual void OnMassChanged(){} 
+        protected virtual void OnMassChanged(){}
+        #endregion
     }
 }
