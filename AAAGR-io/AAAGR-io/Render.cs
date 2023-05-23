@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Formats.Asn1.AsnWriter;
 
-namespace Ping_pong
+namespace AAAGR_io
 {
     public static class Render
     {
@@ -25,9 +25,9 @@ namespace Ping_pong
 
             window.SetFramerateLimit(wantedFrameRate);
         }
-        public static void RenderWindow(List<GameObject> gameObjects)
+        public static void RenderWindow(Dictionary<string, GameObject> gameObjects)
         {
-            window.Clear(Color.Black);
+            window.Clear(Color.White);
 
             window.DispatchEvents();
 
@@ -39,11 +39,11 @@ namespace Ping_pong
         {
             window.Closed += WindowClosed;
         }
-        private static void DrawGameObjects(List<GameObject> gameObjects)
+        private static void DrawGameObjects(Dictionary<string, GameObject> gameObjects)
         {
-            foreach (var gameObject in gameObjects)
+            foreach (var gameObject in gameObjects.Values)
             {
-                window.Draw(gameObject.DrawableShape);
+                window.Draw(gameObject.UniversalShape);
             }
 
             window.Draw(Scores);

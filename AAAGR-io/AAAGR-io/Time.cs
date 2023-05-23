@@ -2,7 +2,7 @@
 using System.Diagnostics;
 
 
-namespace Ping_pong
+namespace AAAGR_io
 {
     public static class Time
     {
@@ -17,7 +17,7 @@ namespace Ping_pong
         private static Clock clock = new Clock();
         private static Stopwatch timer = new Stopwatch();
 
-        public static void Start()
+        public static void StartTime()
         {
             timer.Start();
             deltaTime = 0;

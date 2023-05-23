@@ -1,33 +1,20 @@
-﻿using SFML.Graphics;
-using SFML.Window;
+﻿using AAAGR_io;
 
-namespace Ping_pong
+namespace AAAGR_io
 {
-    public class Game
+    public class Game : GameLoop
     {
-        private List<GameObject> gameObjects = new List<GameObject>();
+        public static Game Instance { get; private set; }
+
+        public Dictionary<string, GameObject> gameObjects = new Dictionary<string, GameObject>();
 
         public void StartGame()
         {
             Init();
 
-            while (Render.window.IsOpen) 
-            {
-                Time.UpdateSystemTime();
-
-                if (Time.totalTimeBeforeUpdate >= 1/Render.wantedFrameRate)
-                {
-                    Time.ResetTimeBeforeUpdate();
-
-                    DoGameStep();
-
-                    Time.UpdateTime();
-                }
-
-                Render.TryClose();
-            }
+            LaunchGame();
         }
-        private void DoGameStep()
+        protected override void DoGameStep()
         {
             Time.UpdateTime();
 
@@ -41,36 +28,53 @@ namespace Ping_pong
         #region Init
         private void Init()
         {
+            Instance = this;
+
             Render.InitRender();
 
-            Time.Start();
-            
-            gameObjects = new List<GameObject>()
-            {
+            Time.StartTime();
 
-            };
+            Spawn.InitSpawn();
+
+            gameObjects = Spawn.Entities;
 
             //Awaken my masters!
-            foreach(var gameObject in gameObjects)
+            foreach(var gameObject in gameObjects.Values)
                 gameObject.Awake();
-
         }
         #endregion
 
         #region Input
         private void GetInput()
         {
-
+            foreach(var gameObject in gameObjects.Values)
+                gameObject.GetInput();
         }
         #endregion
 
         #region Update
         private void UpdateGameObjects()
         {
-            foreach (var gameObject in gameObjects)
+            Spawn.TryAddFood();
+
+            foreach (var gameObject in gameObjects.Values)
             {
                 gameObject.Update();
             }
+
+            //Check collisions
+            foreach(var colliding in gameObjects.Values)
+            {
+                foreach(var collideable in gameObjects.Values)
+                {
+                    if (colliding == collideable)
+                        continue;
+
+                    collideable.TryEat(collideable.UniversalShape, colliding);
+                    colliding.TryEat(colliding.UniversalShape, collideable);
+                }
+            } 
+           
         }
         #endregion
     }

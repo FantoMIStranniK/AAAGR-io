@@ -1,5 +1,5 @@
 ﻿
-namespace Ping_pong
+namespace AAAGR_io
 {
     public interface IMovement
     {
