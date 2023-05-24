@@ -1,7 +1,6 @@
 ﻿using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace AAAGR_io
 {
