@@ -30,6 +30,11 @@ namespace AAAGR_io
         {
             base.Awake();
 
+            if (awakened)
+                return;
+
+            awakened = true;
+
             shape.Position = newPosition;
         }
     }

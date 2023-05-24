@@ -1,6 +1,7 @@
 ﻿using SFML.Graphics;
 using SFML.Window;
 using SFML.System;
+using System.Net;
 
 namespace AAAGR_io
 {
@@ -9,6 +10,12 @@ namespace AAAGR_io
         public bool IsAI { get; private set; } = false;
 
         private CircleShape body;
+
+        private int countOfTicks = 0;
+
+        private Vector2f newPositon;
+        private Vector2f prevPositon;
+        private Vector2f targetPosition;
 
         public Eater(bool isAi, float mass, string name, Color color) 
         {
@@ -35,12 +42,28 @@ namespace AAAGR_io
         {
             base.Awake();
 
+            if (awakened)
+                return;
+
+            awakened = true;
+
             Random rand = new Random();
 
             int playerX = rand.Next(100, (int)Render.width - 100);
             int playerY = rand.Next(100, (int)Render.height - 100);
 
             body.Position = new Vector2f(playerX, playerY);
+
+            prevPositon = body.Position;
+            newPositon = body.Position;
+        }
+        public override void Update()
+        {
+            base.Update();
+
+            Move();
+
+            ControlMass();
         }
         public override void GetInput()
         {
@@ -51,6 +74,16 @@ namespace AAAGR_io
             else
                 AiInput();
         }
+        public override void Destroy()
+        {
+            base.Destroy();
+
+            if (!IsAI)
+            {
+                Spawner.OnMainPlayerLoss();
+                Game.Instance.AddScore(-1);
+            }
+        }
         public override void Eat(GameObject food)
         {
             base.Eat(food);
@@ -58,13 +91,27 @@ namespace AAAGR_io
             if (food.tag is "food")
                 mass += (food.mass * 0.2f) / mass;
             else
-                mass += food.mass * 0.5f;
+                mass += food.mass * 0.025f;
 
             food.Destroy();
         }
         protected override void OnMassChanged()
         {
             UniversalShape.Scale = new Vector2f(mass, mass);
+
+            if (!IsAI)
+                Render.UpdateMassText(mass);
+        }
+        #endregion
+
+        #region MassControl
+        private void ControlMass()
+        {
+            if(mass >= 16.5f)
+            {
+                Destroy();
+                Game.Instance.AddScore(3);
+            }
         }
         #endregion
 
@@ -85,19 +132,39 @@ namespace AAAGR_io
             if (Keyboard.IsKeyPressed(Keyboard.Key.D))
                 newPosition = new Vector2f(newPosition.X + 3 / mass, newPosition.Y);
 
-            if(!Utilities.IsValidCoordinate(newPosition.X - body.Radius * mass, Render.width - body.Radius * 2 * mass))
+            if(!IsValidCoordinate(newPosition.X - body.Radius * mass, Render.width - body.Radius * 2 * mass))
                 newPosition.X = body.Position.X;
-            if(!Utilities.IsValidCoordinate(newPosition.Y - body.Radius * mass, Render.height - body.Radius * 2 * mass))
+            if(!IsValidCoordinate(newPosition.Y - body.Radius * mass, Render.height - body.Radius * 2 * mass))
                 newPosition.Y = body.Position.Y;
 
-            body.Position = newPosition;
+            newPositon = newPosition;
         }
+        public override void Move()
+        {
+            base.Move();
+
+            body.Position = newPositon;
+        }
+        public bool IsValidCoordinate(float coordinate, float limit)
+            => coordinate > 0 && coordinate < limit;
         #endregion
 
         #region AiInput
         private void AiInput()
         {
+            Random rand = new Random();
 
+            if (countOfTicks >= 120)
+            {
+                prevPositon = UniversalShape.Position;
+                targetPosition = new Vector2f(rand.Next(50, (int)Render.width), rand.Next(50, (int)Render.height));
+                countOfTicks = 0;
+            }
+            else
+            {
+                newPositon += (targetPosition - prevPositon) / 1000;
+                countOfTicks++;
+            }
         }
         #endregion
     }

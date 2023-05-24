@@ -25,13 +25,15 @@ namespace AAAGR_io
 
         public Shape UniversalShape { get; protected set; }
 
+        protected bool awakened = false;
+
         #region Methods
         public void TryEat(Shape thisShape, GameObject collided)
         {
             var thisBounds = thisShape.GetGlobalBounds();
             var collidedShapeBounds = collided.UniversalShape.GetGlobalBounds();
 
-            if (thisBounds.Intersects(collidedShapeBounds) && mass > collided.mass && !Utilities.ApproximatelyEqual(mass, collided.mass))
+            if (thisBounds.Intersects(collidedShapeBounds) && MathF.Abs(mass - collided.mass) > 0.35f && mass > collided.mass)
                 Eat(collided);
         }
         public virtual void GetInput(){}
@@ -41,13 +43,15 @@ namespace AAAGR_io
         public virtual void Update(){}
         public virtual void Destroy()
         {
-            var gameObjectsList = Game.Instance.gameObjects;
+            var gameObjectsList = Spawner.Entities;
 
             if (gameObjectsList.ContainsKey(name))
                 gameObjectsList.Remove(name);
 
             if (tag is "food")
-                Spawn.OnFoodDecreased();
+                Spawner.OnFoodDecreased();
+            else if (tag is "Eater")
+                Spawner.OnPlayerDecreased();
         }
         protected virtual void OnMassChanged(){}
         #endregion

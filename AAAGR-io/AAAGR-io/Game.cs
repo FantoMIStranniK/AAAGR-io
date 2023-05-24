@@ -6,8 +6,19 @@ namespace AAAGR_io
     {
         public static Game Instance { get; private set; }
 
-        public Dictionary<string, GameObject> gameObjects = new Dictionary<string, GameObject>();
-
+        public int Score
+        {
+            get
+            {
+                return _score;
+            }
+            private set 
+            { 
+                _score = value;
+                Render.UpdateScoreText(Score);
+            }
+        }
+        private int _score = 0;
         public void StartGame()
         {
             Init();
@@ -22,7 +33,7 @@ namespace AAAGR_io
 
             UpdateGameObjects();
 
-            Render.RenderWindow(gameObjects);
+            Render.RenderWindow(Spawner.Entities);
         }
 
         #region Init
@@ -34,20 +45,16 @@ namespace AAAGR_io
 
             Time.StartTime();
 
-            Spawn.InitSpawn();
+            Spawner.InitSpawn();
 
-            gameObjects = Spawn.Entities;
-
-            //Awaken my masters!
-            foreach(var gameObject in gameObjects.Values)
-                gameObject.Awake();
+            Spawner.AwakeGameObjects();
         }
         #endregion
 
         #region Input
         private void GetInput()
         {
-            foreach(var gameObject in gameObjects.Values)
+            foreach(var gameObject in Spawner.Entities.Values)
                 gameObject.GetInput();
         }
         #endregion
@@ -55,17 +62,17 @@ namespace AAAGR_io
         #region Update
         private void UpdateGameObjects()
         {
-            Spawn.TryAddFood();
+            Spawner.TryAddNeededGameObjects();
 
-            foreach (var gameObject in gameObjects.Values)
+            foreach (var gameObject in Spawner.Entities.Values)
             {
                 gameObject.Update();
             }
 
             //Check collisions
-            foreach(var colliding in gameObjects.Values)
+            foreach(var colliding in Spawner.Entities.Values)
             {
-                foreach(var collideable in gameObjects.Values)
+                foreach(var collideable in Spawner.Entities.Values)
                 {
                     if (colliding == collideable)
                         continue;
@@ -73,9 +80,11 @@ namespace AAAGR_io
                     collideable.TryEat(collideable.UniversalShape, colliding);
                     colliding.TryEat(colliding.UniversalShape, collideable);
                 }
-            } 
-           
+            }
         }
         #endregion
+
+        public void AddScore(int addition)
+            => Score += addition;
     }
 }
