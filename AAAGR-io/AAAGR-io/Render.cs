@@ -40,7 +40,7 @@ namespace AAAGR_io
             scoreText.FillColor = Color.Black;
             scoreText.OutlineColor = Color.Red;
         }
-        public static void RenderWindow(Dictionary<string, GameObject> gameObjects)
+        public static void RenderWindow(List<ListedGameObject> gameObjects)
         {
             window.Clear(Color.White);
 
@@ -68,11 +68,11 @@ namespace AAAGR_io
 
             return text;
         }
-        private static void DrawGameObjects(Dictionary<string, GameObject> gameObjects)
+        private static void DrawGameObjects(List<ListedGameObject> gameObjects)
         {
-            foreach (var gameObject in gameObjects.Values)
+            foreach (var gameObject in gameObjects)
             {
-                window.Draw(gameObject.UniversalShape);
+                window.Draw(gameObject.GameObjectPair.Item2.UniversalShape);
             }
 
             window.Draw(massText);

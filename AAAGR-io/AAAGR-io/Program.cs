@@ -5,9 +5,9 @@ namespace AAAGR_io
     {
         static void Main(string[] args)
         {
-            Game game = new Game();
+            GameLoop gameLoop = new GameLoop();
 
-            game.StartGame();
+            gameLoop.LaunchGame();
         }
     }
 }

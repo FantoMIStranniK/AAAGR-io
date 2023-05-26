@@ -2,9 +2,11 @@
 
 namespace AAAGR_io
 {
-    public class Game : GameLoop
+    public class Game
     {
         public static Game Instance { get; private set; }
+
+        public GameObjectsList GameObjectsList { get; private set; } = new GameObjectsList();
 
         public int Score
         {
@@ -19,25 +21,9 @@ namespace AAAGR_io
             }
         }
         private int _score = 0;
-        public void StartGame()
-        {
-            Init();
-
-            LaunchGame();
-        }
-        protected override void DoGameStep()
-        {
-            Time.UpdateTime();
-
-            GetInput();
-
-            UpdateGameObjects();
-
-            Render.RenderWindow(Spawner.Entities);
-        }
 
         #region Init
-        private void Init()
+        public void InitGame()
         {
             Instance = this;
 
@@ -45,45 +31,16 @@ namespace AAAGR_io
 
             Time.StartTime();
 
-            Spawner.InitSpawn();
+            GameObjectsList.InitSpawn();
 
-            Spawner.AwakeGameObjects();
+            GameObjectsList.AwakeGameObjects();
         }
         #endregion
 
-        #region Input
-        private void GetInput()
+        public void OnObjectDeath(string Id)
         {
-            foreach(var gameObject in Spawner.Entities.Values)
-                gameObject.GetInput();
+            GameObjectsList.AddObjectToDestroyQueue(Id);
         }
-        #endregion
-
-        #region Update
-        private void UpdateGameObjects()
-        {
-            Spawner.TryAddNeededGameObjects();
-
-            foreach (var gameObject in Spawner.Entities.Values)
-            {
-                gameObject.Update();
-            }
-
-            //Check collisions
-            foreach(var colliding in Spawner.Entities.Values)
-            {
-                foreach(var collideable in Spawner.Entities.Values)
-                {
-                    if (colliding == collideable)
-                        continue;
-
-                    collideable.TryEat(collideable.UniversalShape, colliding);
-                    colliding.TryEat(colliding.UniversalShape, collideable);
-                }
-            }
-        }
-        #endregion
-
         public void AddScore(int addition)
             => Score += addition;
     }

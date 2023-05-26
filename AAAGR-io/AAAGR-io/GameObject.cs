@@ -43,15 +43,10 @@ namespace AAAGR_io
         public virtual void Update(){}
         public virtual void Destroy()
         {
-            var gameObjectsList = Spawner.Entities;
-
-            if (gameObjectsList.ContainsKey(name))
-                gameObjectsList.Remove(name);
-
             if (tag is "food")
-                Spawner.OnFoodDecreased();
+                Game.Instance.GameObjectsList.OnFoodDecreased();
             else if (tag is "Eater")
-                Spawner.OnPlayerDecreased();
+                Game.Instance.GameObjectsList.OnPlayerDecreased();
         }
         protected virtual void OnMassChanged(){}
         #endregion

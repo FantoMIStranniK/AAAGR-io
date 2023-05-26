@@ -76,13 +76,13 @@ namespace AAAGR_io
         }
         public override void Destroy()
         {
-            base.Destroy();
-
             if (!IsAI)
             {
-                Spawner.OnMainPlayerLoss();
+                Game.Instance.GameObjectsList.OnMainPlayerLoss();
                 Game.Instance.AddScore(-1);
             }
+
+            base.Destroy();
         }
         public override void Eat(GameObject food)
         {
@@ -93,7 +93,7 @@ namespace AAAGR_io
             else
                 mass += food.mass * 0.025f;
 
-            food.Destroy();
+            Game.Instance.OnObjectDeath(food.name);
         }
         protected override void OnMassChanged()
         {
@@ -109,7 +109,7 @@ namespace AAAGR_io
         {
             if(mass >= 16.5f)
             {
-                Destroy();
+                Game.Instance.OnObjectDeath(name);
                 Game.Instance.AddScore(3);
             }
         }
