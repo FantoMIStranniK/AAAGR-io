@@ -2,6 +2,7 @@
 using SFML.Window;
 using SFML.System;
 using System.Net;
+using System.Net.Http.Headers;
 
 namespace AAAGR_io
 {
@@ -16,6 +17,8 @@ namespace AAAGR_io
         private Vector2f newPositon;
         private Vector2f prevPositon;
         private Vector2f targetPosition;
+
+        private bool changedSoul = false;
 
         public Eater(bool isAi, float mass, string name, Color color) 
         {
@@ -35,6 +38,35 @@ namespace AAAGR_io
 
             tag = "Eater";
             this.name = name;
+        }
+        public override void OnSoulChange()
+        {
+            if(IsAI)
+                body.FillColor = Color.Magenta;
+            else
+                body.FillColor = Color.Black;
+
+            IsAI = !IsAI;
+        }
+        public void ChangeSoul()
+        {
+            List<ListedGameObject> players = Game.Instance.GameObjectsList.GetPlayerList();
+
+            Random rand = new Random();
+
+            ListedGameObject chosenOne;
+
+            do
+            {
+                int index = rand.Next(0, players.Count);
+
+                chosenOne = players[index];
+            }
+            while (chosenOne.GameObjectPair.Item2 == this);
+
+            OnSoulChange();
+
+            chosenOne.GameObjectPair.Item2.OnSoulChange();
         }
 
         #region Overrides
@@ -138,6 +170,12 @@ namespace AAAGR_io
                 newPosition.Y = body.Position.Y;
 
             newPositon = newPosition;
+
+            if (Keyboard.IsKeyPressed(Keyboard.Key.F) && !changedSoul)
+            {
+                ChangeSoul();
+                changedSoul = true;
+            }
         }
         public override void Move()
         {

@@ -41,6 +41,7 @@ namespace AAAGR_io
         public virtual void Move(){}
         public virtual void Awake(){}
         public virtual void Update(){}
+        public virtual void OnSoulChange(){}
         public virtual void Destroy()
         {
             if (tag is "food")

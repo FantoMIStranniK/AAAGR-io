@@ -86,6 +86,18 @@ namespace AAAGR_io
 
             GameObjectsToDelete.Clear();
         }
+        public List<ListedGameObject> GetPlayerList()
+        {
+            List<ListedGameObject> players = new List<ListedGameObject>();  
+
+            foreach(var gameObjectPair in GameObjects)
+            {
+                if (gameObjectPair.GameObjectPair.Item2.tag == "Eater")
+                    players.Add(gameObjectPair);
+            }
+
+            return players;
+        }
         private void SpawnFood()
         {
             int foodCordX = rand.Next(75, (int)Render.width - 75);
