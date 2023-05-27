@@ -62,7 +62,7 @@ namespace AAAGR_io
 
                 chosenOne = players[index];
             }
-            while (chosenOne.GameObjectPair.Item2 == this);
+            while (chosenOne.GameObjectPair.Item1 == this.name || !chosenOne.GameObjectPair.Item2.isAlive);
 
             OnSoulChange();
 
@@ -122,8 +122,10 @@ namespace AAAGR_io
 
             if (food.tag is "food")
                 mass += (food.mass * 0.2f) / mass;
-            else
+            else if (food.tag is "Eater")
                 mass += food.mass * 0.025f;
+
+            food.isAlive = false;
 
             Game.Instance.OnObjectDeath(food.name);
         }

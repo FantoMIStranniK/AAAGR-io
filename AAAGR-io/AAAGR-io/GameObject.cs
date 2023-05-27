@@ -23,6 +23,8 @@ namespace AAAGR_io
         public string tag { get; protected set; } = " " ;
         public string name { get; protected set; } = " ";
 
+        public bool isAlive = true;
+
         public Shape UniversalShape { get; protected set; }
 
         protected bool awakened = false;
@@ -33,7 +35,7 @@ namespace AAAGR_io
             var thisBounds = thisShape.GetGlobalBounds();
             var collidedShapeBounds = collided.UniversalShape.GetGlobalBounds();
 
-            if (thisBounds.Intersects(collidedShapeBounds) && MathF.Abs(mass - collided.mass) > 0.35f && mass > collided.mass)
+            if (thisBounds.Intersects(collidedShapeBounds) && MathF.Abs(mass - collided.mass) > 0.35f && mass > collided.mass && collided.isAlive)
                 Eat(collided);
         }
         public virtual void GetInput(){}
