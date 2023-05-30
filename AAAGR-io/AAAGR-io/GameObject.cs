@@ -1,8 +1,10 @@
 ﻿using SFML.Graphics;
+using SFML.System;
+using System.Reflection.Metadata.Ecma335;
 
 namespace AAAGR_io
 {
-    public abstract class GameObject : IEat, IMovement, IControllable
+    public abstract class GameObject : IEat, IMovement
     {
         #region Mass
         public float mass
@@ -38,9 +40,11 @@ namespace AAAGR_io
             if (thisBounds.Intersects(collidedShapeBounds) && MathF.Abs(mass - collided.mass) > 0.35f && mass > collided.mass && collided.isAlive)
                 Eat(collided);
         }
-        public virtual void GetInput(){}
+        public virtual ListedGameObject ChangeSoul(){ return new ListedGameObject(); }
+        public virtual CircleShape ActualPlayerShape()
+            => new CircleShape();
         public virtual void Eat(GameObject food){}
-        public virtual void Move(){}
+        public virtual void Move(Vector2f newPosition){}
         public virtual void Awake(){}
         public virtual void Update(){}
         public virtual void OnSoulChange(){}
