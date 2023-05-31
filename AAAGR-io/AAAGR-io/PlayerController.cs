@@ -67,7 +67,7 @@ namespace AAAGR_io
                 return;
 
             myGameObject?.Move(newPositon);
-
+            /*
             if(doSoulChange && soulChangeCooldownTicks >= 250 && canChangeSoul)
             {
                 MyListedGameObject = myGameObject?.ChangeSoul().myNewObject;
@@ -77,6 +77,7 @@ namespace AAAGR_io
 
             if (!canChangeSoul)
                 soulChangeCooldownTicks++;
+            */
         }
         private bool UnableToProcess()
             => MyListedGameObject is null || myGameObject is null;

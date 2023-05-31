@@ -190,7 +190,7 @@ namespace AAAGR_io
 
             GameObjects.Add(newPlayer);
 
-            if (initedPlayers) ;
+            if (initedPlayers)
                 ProcessNullControllers(newPlayer);
 
             return newPlayer; 
