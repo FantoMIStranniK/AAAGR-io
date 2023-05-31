@@ -8,6 +8,8 @@ namespace AAAGR_io
 
         public GameObjectsList GameObjectsList { get; private set; } = new GameObjectsList();
 
+        public List<PlayerController> PlayerControllers  {get; private set; } = new List<PlayerController>();
+
         public int Score
         {
             get
@@ -33,7 +35,32 @@ namespace AAAGR_io
 
             GameObjectsList.InitSpawn();
 
+            InitPlayerControllers();
+
             GameObjectsList.AwakeGameObjects();
+
+            AwakeControllers();
+        }
+        private void AwakeControllers()
+        {
+            foreach(var controller in PlayerControllers)
+            {
+                controller.AwakeController();
+            }
+        }
+        private void InitPlayerControllers()
+        {
+            var players = GameObjectsList.GetPlayerList();
+
+            foreach(var player in players)
+            {
+                bool isAi = true;
+
+                if(player.GameObjectPair.Item1 == GameObjectsList.CurrentPlayerName)
+                    isAi = false;
+
+                PlayerControllers.Add(new PlayerController(player, isAi));
+            }
         }
         #endregion
 

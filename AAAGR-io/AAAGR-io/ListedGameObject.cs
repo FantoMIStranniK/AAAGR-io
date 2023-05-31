@@ -1,4 +1,6 @@
 ﻿
+using System.Diagnostics.CodeAnalysis;
+
 namespace AAAGR_io
 {
     public struct ListedGameObject
@@ -9,5 +11,11 @@ namespace AAAGR_io
         {
             GameObjectPair = (name, gameObject);
         }
+
+        public static bool operator ==(ListedGameObject? listedGameObject1, ListedGameObject? listedGameObject2)
+            => listedGameObject1?.GameObjectPair == listedGameObject2?.GameObjectPair;
+
+        public static bool operator !=(ListedGameObject? listedGameObject1, ListedGameObject? listedGameObject2)
+            => !(listedGameObject1?.GameObjectPair == listedGameObject2?.GameObjectPair);
     }
 }

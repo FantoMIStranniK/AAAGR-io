@@ -1,4 +1,5 @@
 ﻿using SFML.Graphics;
+using System.Runtime.CompilerServices;
 
 namespace AAAGR_io
 {
@@ -7,6 +8,8 @@ namespace AAAGR_io
     {
         public List<ListedGameObject> GameObjects = new List<ListedGameObject>();
 
+        public string CurrentPlayerName;
+
         private List<GameObject> GameObjectsToDelete = new List<GameObject>();    
 
         //Need values
@@ -14,6 +17,7 @@ namespace AAAGR_io
         private int neededPlayerCount = 0;
 
         private bool needForPlayer = false;
+        private bool initedPlayers = false;
 
         //Start values
         private int countOfFoodPoints = 35;
@@ -26,38 +30,25 @@ namespace AAAGR_io
             //Create main player
             CreatePlayer(false, Color.Magenta, 1.5f + rand.NextSingle());
 
+
             for(int i = 0; i < countOfFoodPoints; i++)
                 SpawnFood();
 
             for(int i = 0; i < countOfOtherPlayers; i++)
                 CreatePlayer(true, GetRandomColor(), 1.5f + rand.NextSingle());
+
+            initedPlayers = true;
         }
+        #region Events
         public void OnFoodDecreased()
             => neededFoodCount++;
         public void OnPlayerDecreased()
             => neededPlayerCount++;
         public void OnMainPlayerLoss()
             => needForPlayer = true;
-        public void TryAddNeededGameObjects()
-        {
-            for (int i = 0; i < neededFoodCount; i++)
-                SpawnFood();
+        #endregion
 
-            neededFoodCount = 0;
-
-            for (int i = 0; i < neededPlayerCount; i++)
-                CreatePlayer(true, GetRandomColor(), 1.5f + rand.NextSingle());
-
-            neededPlayerCount = 0;
-
-            if(needForPlayer)
-            {
-                CreatePlayer(false, Color.Magenta, 1.5f + rand.NextSingle());
-                needForPlayer = false;
-            }
-
-            AwakeGameObjects();
-        }
+        #region Deletion
         public void AddObjectToDestroyQueue(string Id)
         {
             for(int i = 0; i < GameObjects.Count; i++)
@@ -77,14 +68,66 @@ namespace AAAGR_io
                 {
                     if (gameObject.GameObjectPair.Item2 == gameObjectToDelete)
                     {
-                        gameObject.GameObjectPair.Item2.Destroy();
-                        GameObjects.Remove(gameObject);
+                        RemoveGameObject(gameObject);
                         break;
                     }
                 }
             }
 
             GameObjectsToDelete.Clear();
+        }
+        private void RemoveGameObject(ListedGameObject listedGameObject)
+        {
+            var gameObject = listedGameObject.GameObjectPair.Item2;
+
+            var controller = FindControllerByObject(listedGameObject);
+
+            controller?.ResetGameObject();
+
+            gameObject.Destroy();
+            GameObjects.Remove(listedGameObject);
+
+        }
+        private PlayerController? FindControllerByObject(ListedGameObject? listedGameObject)
+        {
+            var controllers = Game.Instance.PlayerControllers;
+
+            foreach(var controller in controllers)
+            {
+                if (controller.MyListedGameObject == null)
+                    return null;
+
+                if(controller.MyListedGameObject == listedGameObject)
+                    return controller;
+            }
+
+            return null;
+        }
+        #endregion
+
+        #region Addition
+        public void TryAddNeededGameObjects()
+        {
+            for (int i = 0; i < neededFoodCount; i++)
+                SpawnFood();
+
+            neededFoodCount = 0;
+
+            for (int i = 0; i < neededPlayerCount; i++)
+            {
+                var player = CreatePlayer(true, GetRandomColor(), 1.5f + rand.NextSingle());
+                TryAddNewController(player);
+            }
+
+            neededPlayerCount = 0;
+
+            if (needForPlayer)
+            {
+                CreatePlayer(false, Color.Magenta, 1.5f + rand.NextSingle());
+                needForPlayer = false;
+            }
+
+            AwakeGameObjects();
         }
         public List<ListedGameObject> GetPlayerList()
         {
@@ -98,6 +141,17 @@ namespace AAAGR_io
 
             return players;
         }
+        private void TryAddNewController(ListedGameObject listedGameObject)
+        {
+            foreach(var controller in  Game.Instance.PlayerControllers)
+            {
+                if (controller.MyListedGameObject is null && controller.IsAi)
+                    controller.SetNewGameObject(listedGameObject);
+            }
+        }
+        #endregion
+
+        #region Spawning
         private void SpawnFood()
         {
             int foodCordX = rand.Next(75, (int)Render.width - 75);
@@ -123,14 +177,39 @@ namespace AAAGR_io
 
             return colors[rand.Next(colors.Count)];
         }
-        private void CreatePlayer(bool isAI, Color color, float mass)
+        private ListedGameObject CreatePlayer(bool isAI, Color color, float mass)
         {
             string playerName = "player" + FreeNames.GetFreePlayerIndex().ToString();
 
+            if(!isAI)
+                CurrentPlayerName = playerName;
+
             Eater player = new Eater(isAI, mass, playerName, color);
 
-            GameObjects.Add(new ListedGameObject(playerName, player));
+            var newPlayer = new ListedGameObject(playerName, player);
+
+            GameObjects.Add(newPlayer);
+
+            if (initedPlayers) ;
+                ProcessNullControllers(newPlayer);
+
+            return newPlayer; 
         }
+        private void ProcessNullControllers(ListedGameObject listedGameObject)
+        {
+            var controllers = Game.Instance.PlayerControllers;
+
+            foreach(var controller in controllers)
+            {
+                if(controller.MyListedGameObject == null)
+                {
+                    controller.SetNewGameObject(listedGameObject);
+                    return;
+                }
+            }
+        }
+        #endregion
+
         public void AwakeGameObjects()
         {
             foreach (var gameObject in GameObjects)

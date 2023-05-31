@@ -27,10 +27,10 @@ namespace AAAGR_io
 
         }
         private void DoGameStep() 
-        { 
-            UpdateGameObjects();
-
+        {
             GetInput();
+
+            UpdateGameObjects();
 
             Render.RenderWindow(game.GameObjectsList.GameObjects);
         }
@@ -41,9 +41,10 @@ namespace AAAGR_io
             game.GameObjectsList.DeleteGameObjects();
 
             foreach (var gameObject in game.GameObjectsList.GameObjects)
-            {
                 gameObject.GameObjectPair.Item2.Update();
-            }
+
+            foreach(var controller in game.PlayerControllers)
+                controller.ProcessInput();
 
             //Check collisions
             foreach (var colliding in game.GameObjectsList.GameObjects)
@@ -62,8 +63,10 @@ namespace AAAGR_io
         }
         private void GetInput()
         {
-            foreach (var gameObject in game.GameObjectsList.GameObjects)
-                gameObject.GameObjectPair.Item2.GetInput();
+            foreach(var controller in game.PlayerControllers)
+            {
+                controller.GetInput();
+            }
         }
     }
 }

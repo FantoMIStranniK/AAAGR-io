@@ -7,6 +7,8 @@ namespace AAAGR_io
     {
         public bool IsAi = false;
 
+        public ListedGameObject? MyListedGameObject { get; private set; } = null;
+
         //Ticks
         private int countOfTicksToChangeDirection = 0;
         private int soulChangeCooldownTicks = 10;
@@ -20,21 +22,27 @@ namespace AAAGR_io
         private bool canChangeSoul = false;
         private bool doSoulChange = false;
 
-        public ListedGameObject MyListedGameObject { get; private set; }
-
-        private GameObject myGameObject;
+        private GameObject? myGameObject;
 
         public PlayerController(ListedGameObject gameObject, bool isAi)
         {
             IsAi = isAi;
             MyListedGameObject = gameObject;
 
-            myGameObject = MyListedGameObject.GameObjectPair.Item2;
+            myGameObject = MyListedGameObject?.GameObjectPair.Item2;
         }
 
         #region Control methods
         public void SetNewGameObject(ListedGameObject gameObject)
-            => MyListedGameObject = gameObject;
+        {
+            MyListedGameObject = gameObject;
+            myGameObject = MyListedGameObject?.GameObjectPair.Item2;
+        }
+        public void ResetGameObject()
+        {
+            MyListedGameObject = null;
+            myGameObject = null;
+        }
         public void AwakeController()
         {
             prevPositon = myGameObject.UniversalShape.Position;
@@ -45,6 +53,9 @@ namespace AAAGR_io
         #region Input procession
         public void GetInput()
         {
+            if (UnableToProcess())
+                return;
+
             if (IsAi)
                 AiInput();
             else
@@ -52,11 +63,14 @@ namespace AAAGR_io
         }
         public void ProcessInput()
         {
-            myGameObject.Move(newPositon);
+            if (UnableToProcess())
+                return;
+
+            myGameObject?.Move(newPositon);
 
             if(doSoulChange && soulChangeCooldownTicks >= 250 && canChangeSoul)
             {
-                MyListedGameObject = myGameObject.ChangeSoul();
+                MyListedGameObject = myGameObject?.ChangeSoul().myNewObject;
                 doSoulChange = false;
                 canChangeSoul = false;
             }
@@ -64,6 +78,8 @@ namespace AAAGR_io
             if (!canChangeSoul)
                 soulChangeCooldownTicks++;
         }
+        private bool UnableToProcess()
+            => MyListedGameObject is null || myGameObject is null;
         #endregion
 
         #region Input variations

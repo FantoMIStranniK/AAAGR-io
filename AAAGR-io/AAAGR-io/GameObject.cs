@@ -40,7 +40,7 @@ namespace AAAGR_io
             if (thisBounds.Intersects(collidedShapeBounds) && MathF.Abs(mass - collided.mass) > 0.35f && mass > collided.mass && collided.isAlive)
                 Eat(collided);
         }
-        public virtual ListedGameObject ChangeSoul(){ return new ListedGameObject(); }
+        public virtual (ListedGameObject myNewObject, ListedGameObject enemyObject) ChangeSoul(){ return (new ListedGameObject(), new ListedGameObject()); }
         public virtual CircleShape ActualPlayerShape()
             => new CircleShape();
         public virtual void Eat(GameObject food){}

@@ -43,7 +43,7 @@ namespace AAAGR_io
 
             IsAI = !IsAI;
         }
-        public override ListedGameObject ChangeSoul()
+        public override (ListedGameObject myNewObject, ListedGameObject enemyObject) ChangeSoul()
         {
             List<ListedGameObject> players = Game.Instance.GameObjectsList.GetPlayerList();
 
@@ -57,13 +57,13 @@ namespace AAAGR_io
 
                 chosenOne = players[index];
             }
-            while (chosenOne.GameObjectPair.Item1 == this.name || !chosenOne.GameObjectPair.Item2.isAlive);
+            while (chosenOne.GameObjectPair.Item1 == name || !chosenOne.GameObjectPair.Item2.isAlive);
 
             OnSoulChange();
 
             chosenOne.GameObjectPair.Item2.OnSoulChange();
 
-            return chosenOne;
+            return (chosenOne, new ListedGameObject(name, this));
         }
 
         #region Overrides
