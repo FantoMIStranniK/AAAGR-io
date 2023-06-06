@@ -1,11 +1,18 @@
-﻿using SFML.Graphics;
+﻿using AAAGR_io.Engine.GameObjects;
+using AAAGR_io.Engine.Input;
+using AAAGR_io.GameAssets;
+using SFML.Graphics;
 
-namespace AAAGR_io
+namespace AAAGR_io.Engine
 {
 
     public class GameObjectsList
     {
         public List<ListedGameObject> GameObjects = new List<ListedGameObject>();
+
+        public PlayerController MainPlayerController;
+
+        public List<PlayerController> Bots = new List<PlayerController>();
 
         private List<GameObject> GameObjectsToDelete = new List<GameObject>();    
 
@@ -19,6 +26,8 @@ namespace AAAGR_io
         private int countOfFoodPoints = 35;
         private int countOfOtherPlayers = 5;
 
+        private bool initedPlayers = false; 
+
         private Random rand = new Random();
 
         public void InitSpawn()
@@ -31,6 +40,8 @@ namespace AAAGR_io
 
             for(int i = 0; i < countOfOtherPlayers; i++)
                 CreatePlayer(true, GetRandomColor(), 1.5f + rand.NextSingle());
+
+            initedPlayers = true;
         }
         public void OnFoodDecreased()
             => neededFoodCount++;
@@ -129,7 +140,51 @@ namespace AAAGR_io
 
             Eater player = new Eater(isAI, mass, playerName, color);
 
+            PlayerController controller;
+
+            if(!initedPlayers)
+            {
+                controller = new PlayerController(isAI);
+
+                controller.SetNewGameObject(ref player);
+
+                player.MyController = controller;
+
+                if (isAI)
+                    Bots.Add(controller);
+                else
+                    MainPlayerController = controller;
+            }
+            else
+            {
+                PlayerController? freeController;
+
+                if (isAI)
+                {
+                    freeController = NulledBotsController();
+
+                    if (freeController == null)
+                        return;
+                    else
+                        player.MyController = freeController;
+                }
+                else
+                {
+                    player.MyController = MainPlayerController;
+                }
+            }
+
             GameObjects.Add(new ListedGameObject(playerName, player));
+        }
+        private PlayerController? NulledBotsController()
+        {
+            foreach(var controller in Bots)
+            {
+                if(controller.ControlledGameObject == null)
+                    return controller;
+            }
+
+            return null;
         }
         public void AwakeGameObjects()
         {

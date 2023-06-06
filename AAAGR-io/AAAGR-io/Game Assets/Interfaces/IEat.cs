@@ -1,6 +1,6 @@
 ﻿using SFML.Graphics;
 
-namespace AAAGR_io
+namespace AAAGR_io.GameAssets.Interfaces
 {
     public interface IEat
     {

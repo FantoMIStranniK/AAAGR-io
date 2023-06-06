@@ -1,7 +1,8 @@
 ﻿using SFML.System;
 using SFML.Graphics;
+using AAAGR_io.Engine.GameObjects;
 
-namespace AAAGR_io
+namespace AAAGR_io.GameAssets
 {
     public class Food : GameObject
     {

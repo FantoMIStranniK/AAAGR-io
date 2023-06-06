@@ -1,5 +1,4 @@
-﻿
-namespace AAAGR_io
+﻿namespace AAAGR_io.Engine.GameObjects
 {
     public struct ListedGameObject
     {

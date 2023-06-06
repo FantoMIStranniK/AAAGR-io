@@ -1,8 +1,9 @@
-﻿using SFML.Graphics;
+﻿using AAAGR_io.Engine.GameObjects;
+using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
 
-namespace AAAGR_io
+namespace AAAGR_io.Engine
 {
     public static class Render
     {

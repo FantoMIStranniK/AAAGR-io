@@ -1,24 +1,18 @@
 ﻿using SFML.Graphics;
-using SFML.Window;
 using SFML.System;
-using System.Net;
-using System.Net.Http.Headers;
+using AAAGR_io.Engine;
+using AAAGR_io.Engine.GameObjects;
+using AAAGR_io.Engine.Input;
 
-namespace AAAGR_io
+namespace AAAGR_io.GameAssets
 {
     public class Eater : GameObject
     {
         public bool IsAI { get; private set; } = false;
 
-        private CircleShape body;
+        public CircleShape body { get; private set; }
 
-        private int countOfTicks = 0;
-
-        private Vector2f newPositon;
-        private Vector2f prevPositon;
-        private Vector2f targetPosition;
-
-        private bool changedSoul = false;
+        public PlayerController? MyController = null;
 
         public Eater(bool isAi, float mass, string name, Color color) 
         {
@@ -86,28 +80,20 @@ namespace AAAGR_io
 
             body.Position = new Vector2f(playerX, playerY);
 
-            prevPositon = body.Position;
-            newPositon = body.Position;
+            MyController?.SetPositions(body.Position);
         }
         public override void Update()
         {
             base.Update();
 
-            Move();
-
             ControlMass();
-        }
-        public override void GetInput()
-        {
-            base.GetInput();
-
-            if (!IsAI)
-                HumanInput();
-            else
-                AiInput();
         }
         public override void Destroy()
         {
+            MyController?.ResetGameObject();
+
+            MyController = null;
+
             if (!IsAI)
             {
                 Game.Instance.GameObjectsList.OnMainPlayerLoss();
@@ -149,63 +135,11 @@ namespace AAAGR_io
         }
         #endregion
 
-        #region HumanInput
-        private void HumanInput()
+        public override void Move(Vector2f newPosition)
         {
-            Vector2f newPosition = body.Position;
+            base.Move(newPosition);
 
-            if (Keyboard.IsKeyPressed(Keyboard.Key.W))
-                newPosition = new Vector2f(newPosition.X, newPosition.Y - 3 / mass);
-
-            if (Keyboard.IsKeyPressed(Keyboard.Key.A))
-                newPosition = new Vector2f(newPosition.X - 3 / mass, newPosition.Y);
-
-            if (Keyboard.IsKeyPressed(Keyboard.Key.S))
-                newPosition = new Vector2f(newPosition.X, newPosition.Y + 3 / mass);
-
-            if (Keyboard.IsKeyPressed(Keyboard.Key.D))
-                newPosition = new Vector2f(newPosition.X + 3 / mass, newPosition.Y);
-
-            if(!IsValidCoordinate(newPosition.X - body.Radius * mass, Render.width - body.Radius * 2 * mass))
-                newPosition.X = body.Position.X;
-            if(!IsValidCoordinate(newPosition.Y - body.Radius * mass, Render.height - body.Radius * 2 * mass))
-                newPosition.Y = body.Position.Y;
-
-            newPositon = newPosition;
-
-            if (Keyboard.IsKeyPressed(Keyboard.Key.F) && !changedSoul)
-            {
-                ChangeSoul();
-                changedSoul = true;
-            }
+            body.Position = newPosition;
         }
-        public override void Move()
-        {
-            base.Move();
-
-            body.Position = newPositon;
-        }
-        public bool IsValidCoordinate(float coordinate, float limit)
-            => coordinate > 0 && coordinate < limit;
-        #endregion
-
-        #region AiInput
-        private void AiInput()
-        {
-            Random rand = new Random();
-
-            if (countOfTicks >= 120)
-            {
-                prevPositon = UniversalShape.Position;
-                targetPosition = new Vector2f(rand.Next(50, (int)Render.width), rand.Next(50, (int)Render.height));
-                countOfTicks = 0;
-            }
-            else
-            {
-                newPositon += (targetPosition - prevPositon) / 1000;
-                countOfTicks++;
-            }
-        }
-        #endregion
     }
 }

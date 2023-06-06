@@ -1,5 +1,6 @@
-﻿
-namespace AAAGR_io
+﻿using SFML.Window;
+
+namespace AAAGR_io.Engine
 {
     public class GameLoop
     {
@@ -8,6 +9,8 @@ namespace AAAGR_io
         public void LaunchGame()
         {
             game.InitGame();
+
+            Render.window.KeyPressed += HumanInput;
 
             while (Render.window.IsOpen)
             {
@@ -24,15 +27,27 @@ namespace AAAGR_io
 
                 Render.TryClose();
             }
-
         }
-        private void DoGameStep() 
-        { 
+        private void DoGameStep()
+        {
+            Render.window.DispatchEvents();
+
+            BotsInput();
+
             UpdateGameObjects();
 
-            GetInput();
-
             Render.RenderWindow(game.GameObjectsList.GameObjects);
+        }
+        private void BotsInput()
+        {
+            foreach (var controller in Game.Instance.GameObjectsList.Bots)
+            {
+                controller.AiInput();
+            }
+        }
+        private void HumanInput(object sender, KeyEventArgs e)
+        {
+            Game.Instance.GameObjectsList.MainPlayerController.HumanInput(e);
         }
         private void UpdateGameObjects()
         {
@@ -59,11 +74,6 @@ namespace AAAGR_io
             }
 
             game.GameObjectsList.DeleteGameObjects();
-        }
-        private void GetInput()
-        {
-            foreach (var gameObject in game.GameObjectsList.GameObjects)
-                gameObject.GameObjectPair.Item2.GetInput();
         }
     }
 }

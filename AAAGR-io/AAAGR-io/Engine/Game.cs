@@ -1,6 +1,6 @@
-﻿using AAAGR_io;
+﻿using AAAGR_io.Engine.Input;
 
-namespace AAAGR_io
+namespace AAAGR_io.Engine
 {
     public class Game
     {
@@ -14,8 +14,8 @@ namespace AAAGR_io
             {
                 return _score;
             }
-            private set 
-            { 
+            private set
+            {
                 _score = value;
                 Render.UpdateScoreText(Score);
             }

@@ -1,8 +1,10 @@
 ﻿using SFML.Graphics;
+using AAAGR_io.GameAssets.Interfaces;
+using SFML.System;
 
-namespace AAAGR_io
+namespace AAAGR_io.Engine.GameObjects
 {
-    public abstract class GameObject : IEat, IMovement, IControllable
+    public abstract class GameObject : IEat, IMovement
     {
         #region Mass
         public float mass
@@ -20,7 +22,7 @@ namespace AAAGR_io
         private float _mass = 1;
         #endregion
 
-        public string tag { get; protected set; } = " " ;
+        public string tag { get; protected set; } = " ";
         public string name { get; protected set; } = " ";
 
         public bool isAlive = true;
@@ -38,12 +40,11 @@ namespace AAAGR_io
             if (thisBounds.Intersects(collidedShapeBounds) && MathF.Abs(mass - collided.mass) > 0.35f && mass > collided.mass && collided.isAlive)
                 Eat(collided);
         }
-        public virtual void GetInput(){}
-        public virtual void Eat(GameObject food){}
-        public virtual void Move(){}
-        public virtual void Awake(){}
-        public virtual void Update(){}
-        public virtual void OnSoulChange(){}
+        public virtual void Eat(GameObject food) { }
+        public virtual void Move(Vector2f newPosition) { }
+        public virtual void Awake() { }
+        public virtual void Update() { }
+        public virtual void OnSoulChange() { }
         public virtual void Destroy()
         {
             if (tag is "food")
@@ -51,7 +52,7 @@ namespace AAAGR_io
             else if (tag is "Eater")
                 Game.Instance.GameObjectsList.OnPlayerDecreased();
         }
-        protected virtual void OnMassChanged(){}
+        protected virtual void OnMassChanged() { }
         #endregion
     }
 }
