@@ -10,9 +10,7 @@ namespace AAAGR_io.Engine
     {
         public List<ListedGameObject> GameObjects = new List<ListedGameObject>();
 
-        public PlayerController MainPlayerController;
-
-        public List<PlayerController> Bots = new List<PlayerController>();
+        public List<PlayerController> PlayerControllers = new List<PlayerController>();
 
         private List<GameObject> GameObjectsToDelete = new List<GameObject>();    
 
@@ -33,13 +31,13 @@ namespace AAAGR_io.Engine
         public void InitSpawn()
         {
             //Create main player
-            CreatePlayer(false, Color.Magenta, 1.5f + rand.NextSingle());
+            ProcessPlayer(false, Color.Magenta, 1.5f + rand.NextSingle());
 
             for(int i = 0; i < countOfFoodPoints; i++)
                 SpawnFood();
 
             for(int i = 0; i < countOfOtherPlayers; i++)
-                CreatePlayer(true, GetRandomColor(), 1.5f + rand.NextSingle());
+                ProcessPlayer(true, GetRandomColor(), 1.5f + rand.NextSingle());
 
             initedPlayers = true;
         }
@@ -57,13 +55,13 @@ namespace AAAGR_io.Engine
             neededFoodCount = 0;
 
             for (int i = 0; i < neededPlayerCount; i++)
-                CreatePlayer(true, GetRandomColor(), 1.5f + rand.NextSingle());
+                ProcessPlayer(true, GetRandomColor(), 1.5f + rand.NextSingle());
 
             neededPlayerCount = 0;
 
             if(needForPlayer)
             {
-                CreatePlayer(false, Color.Magenta, 1.5f + rand.NextSingle());
+                ProcessPlayer(false, Color.Magenta, 1.5f + rand.NextSingle());
                 needForPlayer = false;
             }
 
@@ -114,7 +112,7 @@ namespace AAAGR_io.Engine
             int foodCordX = rand.Next(75, (int)Render.width - 75);
             int foodCordY = rand.Next(75, (int)Render.height - 75);
 
-            string foodName = "Food" + FreeNames.GetFreeFoodIndex().ToString();
+            string foodName = "Food" + FreeNames.GetFreeFoodIndex();
 
             var newFood = new Food(foodCordX, foodCordY, 0.5f, foodName);
 
@@ -134,53 +132,48 @@ namespace AAAGR_io.Engine
 
             return colors[rand.Next(colors.Count)];
         }
-        private void CreatePlayer(bool isAI, Color color, float mass)
+        private void ProcessPlayer(bool isAI, Color color, float mass)
         {
-            string playerName = "player" + FreeNames.GetFreePlayerIndex().ToString();
+            var player = CreatePlayer(isAI, color, mass);
+
+            var controller = new PlayerController(isAI);
+
+            if(initedPlayers)
+                controller = GetFreeController(isAI);
+
+            player.MyController = controller;
+
+            ListedGameObject listedGameObject = new ListedGameObject(player.name, player);
+
+            GameObjects.Add(listedGameObject);
+
+            controller.ControlledGameObject = (Eater)GetPlayer(player);
+
+            PlayerControllers.Add(controller);
+        }
+        private Eater CreatePlayer(bool isAI, Color color, float mass)
+        {
+            string playerName = "player" + FreeNames.GetFreePlayerIndex();
 
             Eater player = new Eater(isAI, mass, playerName, color);
 
-            PlayerController controller;
-
-            if(!initedPlayers)
-            {
-                controller = new PlayerController(isAI);
-
-                controller.SetNewGameObject(ref player);
-
-                player.MyController = controller;
-
-                if (isAI)
-                    Bots.Add(controller);
-                else
-                    MainPlayerController = controller;
-            }
-            else
-            {
-                PlayerController? freeController;
-
-                if (isAI)
-                {
-                    freeController = NulledBotsController();
-
-                    if (freeController == null)
-                        return;
-                    else
-                        player.MyController = freeController;
-                }
-                else
-                {
-                    player.MyController = MainPlayerController;
-                }
-            }
-
-            GameObjects.Add(new ListedGameObject(playerName, player));
+            return player;
         }
-        private PlayerController? NulledBotsController()
+        private GameObject GetPlayer(GameObject gameObject)
         {
-            foreach(var controller in Bots)
+            foreach (var gameObject1 in GameObjects)
             {
-                if(controller.ControlledGameObject == null)
+                if (gameObject1.GameObjectPair.Item2 == gameObject)
+                    return gameObject1.GameObjectPair.Item2;
+            }
+
+            return null;
+        }
+        private PlayerController GetFreeController(bool aiMode)
+        {
+            foreach(var controller in PlayerControllers)
+            {
+                if (controller.ControlledGameObject == null && controller.IsAi == aiMode)
                     return controller;
             }
 

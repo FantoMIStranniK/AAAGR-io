@@ -1,16 +1,15 @@
 ﻿using SFML.Window;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace AAAGR_io.Engine
 {
     public class GameLoop
     {
         private Game game = new Game();
-
         public void LaunchGame()
         {
             game.InitGame();
-
-            Render.window.KeyPressed += HumanInput;
 
             while (Render.window.IsOpen)
             {
@@ -32,22 +31,18 @@ namespace AAAGR_io.Engine
         {
             Render.window.DispatchEvents();
 
-            BotsInput();
+            GetInput();
 
             UpdateGameObjects();
 
             Render.RenderWindow(game.GameObjectsList.GameObjects);
         }
-        private void BotsInput()
+        private void GetInput()
         {
-            foreach (var controller in Game.Instance.GameObjectsList.Bots)
+            foreach (var controller in Game.Instance.GameObjectsList.PlayerControllers)
             {
-                controller.AiInput();
+                controller.GetInput();
             }
-        }
-        private void HumanInput(object sender, KeyEventArgs e)
-        {
-            Game.Instance.GameObjectsList.MainPlayerController.HumanInput(e);
         }
         private void UpdateGameObjects()
         {
@@ -74,6 +69,39 @@ namespace AAAGR_io.Engine
             }
 
             game.GameObjectsList.DeleteGameObjects();
+        }
+        public static GameLoop? InitGameLoop()
+        {
+            GameLoop gameLoop = new GameLoop();
+
+            string pathToDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\AAAGR.io";
+
+            if (!File.Exists(pathToDocuments + @"\config.txt"))
+                return gameLoop;
+
+            using (StreamReader sr = new StreamReader(pathToDocuments + @"\config.txt"))
+            {
+                while (!sr.EndOfStream)
+                {
+                    var input = sr.ReadLine().Split('=');
+
+                    if (input.Length >= 2)
+                    {
+                        string name = input[0];
+
+                        if (uint.TryParse(input[1], out uint value))
+                        {
+                            Type type = typeof(Render);
+
+                            var piShared = type.GetField(name);
+
+                            piShared?.SetValue(null, value);
+                        }
+                    }
+                }
+            }
+
+            return gameLoop;
         }
     }
 }

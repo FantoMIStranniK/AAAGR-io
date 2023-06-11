@@ -7,7 +7,7 @@ namespace AAAGR_io
     {
         static void Main(string[] args)
         {
-            GameLoop gameLoop = new GameLoop();
+            GameLoop gameLoop = GameLoop.InitGameLoop();
 
             gameLoop.LaunchGame();
         }

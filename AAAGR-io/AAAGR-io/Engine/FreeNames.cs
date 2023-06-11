@@ -6,21 +6,21 @@ namespace AAAGR_io.Engine
         private static long availablePlayerIndex = 0;
         private static long availableFoodIndex = 0;
 
-        public static long GetFreePlayerIndex()
+        public static string GetFreePlayerIndex()
         {
             var lastAvailableNumber = availablePlayerIndex;
 
             availablePlayerIndex++;
 
-            return lastAvailableNumber;
+            return lastAvailableNumber.ToString();
         }
-        public static long GetFreeFoodIndex()
+        public static string GetFreeFoodIndex()
         {
             var lastAvailableNumber = availableFoodIndex;
 
             availableFoodIndex++;
 
-            return lastAvailableNumber;
+            return lastAvailableNumber.ToString();
         }
     }
 }

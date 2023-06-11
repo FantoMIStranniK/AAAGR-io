@@ -4,7 +4,7 @@ using SFML.Window;
 
 namespace AAAGR_io.Engine.Input
 {
-    public struct PlayerController
+    public class PlayerController
     {
         public bool IsAi { get; private set; } = false;
 
@@ -19,9 +19,11 @@ namespace AAAGR_io.Engine.Input
         public PlayerController(bool isAi)
         {
             IsAi = isAi;
+
+            ControlledGameObject = null;
         }
 
-        public void SetNewGameObject(ref Eater gameObject)
+        public void SetNewGameObject(Eater gameObject)
             => ControlledGameObject = gameObject;
         public void ResetGameObject()
             => ControlledGameObject = null;
@@ -30,11 +32,30 @@ namespace AAAGR_io.Engine.Input
             prevPositon = bodyPosition;
             estaminatedPosition = bodyPosition;
         }
-        public void HumanInput(KeyEventArgs e)
+        public void GetInput()
+        {
+            if (IsAi)
+                AiInput();
+            else
+                HumanInput();
+
+            ControlledGameObject?.Move(estaminatedPosition);
+        }
+        public void HumanInput()
         {
             Vector2f newPosition = ControlledGameObject.body.Position;
 
-            newPosition += KeyBindings.Binds[e.Code];
+            if (Keyboard.IsKeyPressed(Keyboard.Key.W))
+                newPosition = new Vector2f(newPosition.X, newPosition.Y - 3 / ControlledGameObject.mass);
+
+            if (Keyboard.IsKeyPressed(Keyboard.Key.A))
+                newPosition = new Vector2f(newPosition.X - 3 / ControlledGameObject.mass, newPosition.Y);
+
+            if (Keyboard.IsKeyPressed(Keyboard.Key.S))
+                newPosition = new Vector2f(newPosition.X, newPosition.Y + 3 / ControlledGameObject.mass);
+
+            if (Keyboard.IsKeyPressed(Keyboard.Key.D))
+                newPosition = new Vector2f(newPosition.X + 3 / ControlledGameObject.mass, newPosition.Y);
 
             if (!IsValidCoordinate(newPosition.X - ControlledGameObject.body.Radius * ControlledGameObject.mass, Render.width - ControlledGameObject.body.Radius * 2 * ControlledGameObject.mass))
                 newPosition.X = ControlledGameObject.body.Position.X;
@@ -60,7 +81,7 @@ namespace AAAGR_io.Engine.Input
 
             if (countOfTicks >= 120)
             {
-                prevPositon = ControlledGameObject.UniversalShape.Position;
+                //prevPositon = ControlledGameObject.UniversalShape.Position;
                 targetPosition = new Vector2f(rand.Next(50, (int)Render.width), rand.Next(50, (int)Render.height));
                 countOfTicks = 0;
             }
