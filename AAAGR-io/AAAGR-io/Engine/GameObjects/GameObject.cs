@@ -37,8 +37,16 @@ namespace AAAGR_io.Engine.GameObjects
             var thisBounds = thisShape.GetGlobalBounds();
             var collidedShapeBounds = collided.UniversalShape.GetGlobalBounds();
 
-            if (thisBounds.Intersects(collidedShapeBounds) && MathF.Abs(mass - collided.mass) > 0.35f && mass > collided.mass && collided.isAlive)
+            if (CanEat(thisBounds, collidedShapeBounds, collided.mass, collided.isAlive))
                 Eat(collided);
+        }
+        private bool CanEat(FloatRect thisBounds, FloatRect collidedBounds, float collidedMass, bool collidedIsAlive)
+        {
+            bool intetsects = thisBounds.Intersects(collidedBounds);
+
+            bool massIsBigger = mass - collidedMass > 0.35f;
+
+            return intetsects && massIsBigger && collidedIsAlive;
         }
         public virtual void Eat(GameObject food) { }
         public virtual void Move(Vector2f newPosition) { }
@@ -49,7 +57,7 @@ namespace AAAGR_io.Engine.GameObjects
         {
             if (tag is "food")
                 Game.Instance.GameObjectsList.OnFoodDecreased();
-            else if (tag is "Eater")
+            else if (tag is "Eater" && name != "MainPlayer")
                 Game.Instance.GameObjectsList.OnPlayerDecreased();
         }
         protected virtual void OnMassChanged() { }

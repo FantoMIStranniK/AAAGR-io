@@ -1,12 +1,12 @@
-﻿using SFML.Window;
-using System.Diagnostics;
-using System.Reflection;
-
+﻿
 namespace AAAGR_io.Engine
 {
     public class GameLoop
     {
         private Game game = new Game();
+
+        private static string pathToDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\AAAGR.io";
+
         public void LaunchGame()
         {
             game.InitGame();
@@ -70,38 +70,62 @@ namespace AAAGR_io.Engine
 
             game.GameObjectsList.DeleteGameObjects();
         }
-        public static GameLoop? InitGameLoop()
+        public static GameLoop InitGameLoop()
         {
             GameLoop gameLoop = new GameLoop();
 
-            string pathToDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\AAAGR.io";
+            gameLoop.game.InitInstance();
 
-            if (!File.Exists(pathToDocuments + @"\config.txt"))
-                return gameLoop;
+            if (File.Exists(pathToDocuments + @"\config.txt"))
+                LoadConfigs();
 
+            return gameLoop;
+        }
+
+        #region Config loading
+        private static void LoadConfigs()
+        {
             using (StreamReader sr = new StreamReader(pathToDocuments + @"\config.txt"))
             {
                 while (!sr.EndOfStream)
                 {
-                    var input = sr.ReadLine().Split('=');
+                    var input = sr.ReadLine().Split("::");
 
-                    if (input.Length >= 2)
-                    {
-                        string name = input[0];
-
-                        if (uint.TryParse(input[1], out uint value))
-                        {
-                            Type type = typeof(Render);
-
-                            var piShared = type.GetField(name);
-
-                            piShared?.SetValue(null, value);
-                        }
-                    }
+                    if (input.Length >= 3)
+                        ProcessConfigLine(input[0], input[1], input[2], input[3]);
                 }
             }
-
-            return gameLoop;
         }
+        private static void ProcessConfigLine(string className, string varType, string varName, string configValue)
+        {
+            Type type;
+
+            switch(className)
+            {
+                case "Render":
+                    type = typeof(Render);
+                    break;
+                case "GameObjectsList":
+                    type = typeof(GameObjectsList);
+                    break;
+                default: 
+                    return;
+            }
+
+            var field = type.GetField(varName);
+
+            switch(varType)
+            {
+                case "uint":
+                    if (uint.TryParse(configValue, out uint value))
+                        field?.SetValue(null, value);
+                    break;
+                case "int":
+                    if(int.TryParse(configValue, out int value1))
+                        field?.SetValue(null, value1); 
+                    break;
+            }
+        }
+        #endregion
     }
 }

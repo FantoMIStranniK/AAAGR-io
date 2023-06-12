@@ -5,6 +5,7 @@ namespace AAAGR_io.Engine
     {
         private static long availablePlayerIndex = 0;
         private static long availableFoodIndex = 0;
+        private static long availableMainPlayerIndex = 0;
 
         public static string GetFreePlayerIndex()
         {

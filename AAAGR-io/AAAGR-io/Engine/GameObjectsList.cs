@@ -15,14 +15,14 @@ namespace AAAGR_io.Engine
         private List<GameObject> GameObjectsToDelete = new List<GameObject>();    
 
         //Need values
-        private int neededFoodCount = 0;
+        private  int neededFoodCount = 0;
         private int neededPlayerCount = 0;
 
         private bool needForPlayer = false;
 
         //Start values
-        private int countOfFoodPoints = 35;
-        private int countOfOtherPlayers = 5;
+        public static int countOfFoodPoints = 35;
+        public static int countOfOtherPlayers = 5;
 
         private bool initedPlayers = false; 
 
@@ -31,13 +31,13 @@ namespace AAAGR_io.Engine
         public void InitSpawn()
         {
             //Create main player
-            ProcessPlayer(false, Color.Magenta, 1.5f + rand.NextSingle());
+            ProcessPlayer(false, Color.Magenta, 1.5f + rand.NextSingle(), "MainPlayer");
 
             for(int i = 0; i < countOfFoodPoints; i++)
                 SpawnFood();
 
             for(int i = 0; i < countOfOtherPlayers; i++)
-                ProcessPlayer(true, GetRandomColor(), 1.5f + rand.NextSingle());
+                ProcessPlayer(true, GetRandomColor(), 1.5f + rand.NextSingle(), "Player" + FreeNames.GetFreePlayerIndex());
 
             initedPlayers = true;
         }
@@ -55,13 +55,13 @@ namespace AAAGR_io.Engine
             neededFoodCount = 0;
 
             for (int i = 0; i < neededPlayerCount; i++)
-                ProcessPlayer(true, GetRandomColor(), 1.5f + rand.NextSingle());
+                ProcessPlayer(true, GetRandomColor(), 1.5f + rand.NextSingle(), "Player" + FreeNames.GetFreePlayerIndex);
 
             neededPlayerCount = 0;
 
             if(needForPlayer)
             {
-                ProcessPlayer(false, Color.Magenta, 1.5f + rand.NextSingle());
+                ProcessPlayer(false, Color.Magenta, 1.5f + rand.NextSingle(), "MainPlayer");
                 needForPlayer = false;
             }
 
@@ -132,9 +132,9 @@ namespace AAAGR_io.Engine
 
             return colors[rand.Next(colors.Count)];
         }
-        private void ProcessPlayer(bool isAI, Color color, float mass)
+        private void ProcessPlayer(bool isAI, Color color, float mass, string name = "default")
         {
-            var player = CreatePlayer(isAI, color, mass);
+            var player = CreatePlayer(isAI, color, mass, name);
 
             var controller = new PlayerController(isAI);
 
@@ -147,13 +147,14 @@ namespace AAAGR_io.Engine
 
             GameObjects.Add(listedGameObject);
 
-            controller.ControlledGameObject = (Eater)GetPlayer(player);
+            controller.SetNewGameObject((Eater)GetPlayer(player));
 
-            PlayerControllers.Add(controller);
+            if(!initedPlayers)
+                PlayerControllers.Add(controller);
         }
-        private Eater CreatePlayer(bool isAI, Color color, float mass)
+        private Eater CreatePlayer(bool isAI, Color color, float mass, string name)
         {
-            string playerName = "player" + FreeNames.GetFreePlayerIndex();
+            string playerName = name;
 
             Eater player = new Eater(isAI, mass, playerName, color);
 

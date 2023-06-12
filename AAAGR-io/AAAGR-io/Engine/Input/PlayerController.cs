@@ -8,7 +8,7 @@ namespace AAAGR_io.Engine.Input
     {
         public bool IsAi { get; private set; } = false;
 
-        public Eater? ControlledGameObject = null;
+        public Eater? ControlledGameObject { get; private set; } = null;
 
         public Vector2f estaminatedPosition = new Vector2f();
         public Vector2f prevPositon = new Vector2f();
@@ -24,7 +24,16 @@ namespace AAAGR_io.Engine.Input
         }
 
         public void SetNewGameObject(Eater gameObject)
-            => ControlledGameObject = gameObject;
+        {
+            ControlledGameObject = gameObject;
+
+            estaminatedPosition = gameObject.UniversalShape.Position;
+
+            prevPositon = estaminatedPosition;
+            targetPosition = estaminatedPosition;
+
+            countOfTicks = 120;
+        }
         public void ResetGameObject()
             => ControlledGameObject = null;
         public void SetPositions(Vector2f bodyPosition)
@@ -34,8 +43,11 @@ namespace AAAGR_io.Engine.Input
         }
         public void GetInput()
         {
-            if (IsAi)
-                AiInput();
+            if (ControlledGameObject == null)
+                return;
+
+            if (IsAi) ;
+            //AiInput();
             else
                 HumanInput();
 
@@ -81,7 +93,7 @@ namespace AAAGR_io.Engine.Input
 
             if (countOfTicks >= 120)
             {
-                //prevPositon = ControlledGameObject.UniversalShape.Position;
+                prevPositon = ControlledGameObject.UniversalShape.Position;
                 targetPosition = new Vector2f(rand.Next(50, (int)Render.width), rand.Next(50, (int)Render.height));
                 countOfTicks = 0;
             }

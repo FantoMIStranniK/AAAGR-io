@@ -25,8 +25,6 @@ namespace AAAGR_io.Engine
         #region Init
         public void InitGame()
         {
-            Instance = this;
-
             Render.InitRender();
 
             Time.StartTime();
@@ -35,6 +33,8 @@ namespace AAAGR_io.Engine
 
             GameObjectsList.AwakeGameObjects();
         }
+        public void InitInstance()
+            => Instance = this;
         #endregion
 
         public void OnObjectDeath(string Id)
