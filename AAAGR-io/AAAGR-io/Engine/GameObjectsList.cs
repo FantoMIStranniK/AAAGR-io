@@ -1,7 +1,9 @@
 ﻿using AAAGR_io.Engine.GameObjects;
 using AAAGR_io.Engine.Input;
+using AAAGR_io.Game_Assets.Interfaces;
 using AAAGR_io.GameAssets;
 using SFML.Graphics;
+using System.Diagnostics.SymbolStore;
 
 namespace AAAGR_io.Engine
 {
@@ -31,7 +33,7 @@ namespace AAAGR_io.Engine
         public void InitSpawn()
         {
             //Create main player
-            ProcessPlayer(false, Color.Magenta, 1.5f + rand.NextSingle(), "MainPlayer");
+            ProcessPlayer(false, Color.Magenta, 1.5f + rand.NextSingle(), "MainPlayer", true, SpriteName.Color);
 
             for(int i = 0; i < countOfFoodPoints; i++)
                 SpawnFood();
@@ -132,9 +134,9 @@ namespace AAAGR_io.Engine
 
             return colors[rand.Next(colors.Count)];
         }
-        private void ProcessPlayer(bool isAI, Color color, float mass, string name = "default")
+        private void ProcessPlayer(bool isAI, Color color, float mass, string name = "default", bool isAnimated = false, SpriteName sprite = SpriteName.None)
         {
-            var player = CreatePlayer(isAI, color, mass, name);
+            var player = CreatePlayer(isAI, color, mass, name, isAnimated, sprite);
 
             var controller = new PlayerController(isAI);
 
@@ -152,11 +154,11 @@ namespace AAAGR_io.Engine
             if(!initedPlayers)
                 PlayerControllers.Add(controller);
         }
-        private Eater CreatePlayer(bool isAI, Color color, float mass, string name)
+        private Eater CreatePlayer(bool isAI, Color color, float mass, string name, bool isAnimated, SpriteName sprite)
         {
             string playerName = name;
 
-            Eater player = new Eater(isAI, mass, playerName, color);
+            Eater player = new Eater(isAI, mass, playerName, color, isAnimated, sprite);
 
             return player;
         }

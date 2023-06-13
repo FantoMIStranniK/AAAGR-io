@@ -8,6 +8,8 @@ namespace AAAGR_io.Engine
 
         public GameObjectsList GameObjectsList { get; private set; } = new GameObjectsList();
 
+        public static string PathToProject = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+
         public int Score
         {
             get
@@ -25,6 +27,8 @@ namespace AAAGR_io.Engine
         #region Init
         public void InitGame()
         {
+            Instance = this;
+
             Render.InitRender();
 
             Time.StartTime();
@@ -33,8 +37,6 @@ namespace AAAGR_io.Engine
 
             GameObjectsList.AwakeGameObjects();
         }
-        public void InitInstance()
-            => Instance = this;
         #endregion
 
         public void OnObjectDeath(string Id)

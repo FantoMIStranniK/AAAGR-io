@@ -22,9 +22,13 @@ namespace AAAGR_io.Engine
             timer.Start();
             deltaTime = 0;
         }
+        public static float GetTime()
+            => deltaTime / 5;
         public static void UpdateTime()
         {
             deltaTime = timer.Elapsed.Milliseconds;
+
+            Console.WriteLine(deltaTime);
 
             timer.Restart();
         }

@@ -46,8 +46,8 @@ namespace AAAGR_io.Engine.Input
             if (ControlledGameObject == null)
                 return;
 
-            if (IsAi) ;
-            //AiInput();
+            if (IsAi)
+                AiInput();
             else
                 HumanInput();
 
@@ -58,16 +58,16 @@ namespace AAAGR_io.Engine.Input
             Vector2f newPosition = ControlledGameObject.body.Position;
 
             if (Keyboard.IsKeyPressed(Keyboard.Key.W))
-                newPosition = new Vector2f(newPosition.X, newPosition.Y - 3 / ControlledGameObject.mass);
+                newPosition = new Vector2f(newPosition.X, newPosition.Y - 3 * Time.GetTime() / ControlledGameObject.mass);
 
             if (Keyboard.IsKeyPressed(Keyboard.Key.A))
-                newPosition = new Vector2f(newPosition.X - 3 / ControlledGameObject.mass, newPosition.Y);
+                newPosition = new Vector2f(newPosition.X - 3 * Time.GetTime() / ControlledGameObject.mass, newPosition.Y);
 
             if (Keyboard.IsKeyPressed(Keyboard.Key.S))
-                newPosition = new Vector2f(newPosition.X, newPosition.Y + 3 / ControlledGameObject.mass);
+                newPosition = new Vector2f(newPosition.X, newPosition.Y + 3 * Time.GetTime() / ControlledGameObject.mass);
 
             if (Keyboard.IsKeyPressed(Keyboard.Key.D))
-                newPosition = new Vector2f(newPosition.X + 3 / ControlledGameObject.mass, newPosition.Y);
+                newPosition = new Vector2f(newPosition.X + 3 * Time.GetTime() / ControlledGameObject.mass, newPosition.Y);
 
             if (!IsValidCoordinate(newPosition.X - ControlledGameObject.body.Radius * ControlledGameObject.mass, Render.width - ControlledGameObject.body.Radius * 2 * ControlledGameObject.mass))
                 newPosition.X = ControlledGameObject.body.Position.X;
@@ -99,7 +99,7 @@ namespace AAAGR_io.Engine.Input
             }
             else
             {
-                estaminatedPosition += (targetPosition - prevPositon) / 1000;
+                estaminatedPosition += (targetPosition - prevPositon) * Time.GetTime() / 1000;
                 countOfTicks++;
             }
         }

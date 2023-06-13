@@ -3,6 +3,7 @@ using SFML.System;
 using AAAGR_io.Engine;
 using AAAGR_io.Engine.GameObjects;
 using AAAGR_io.Engine.Input;
+using AAAGR_io.Game_Assets.Interfaces;
 
 namespace AAAGR_io.GameAssets
 {
@@ -14,7 +15,7 @@ namespace AAAGR_io.GameAssets
 
         public PlayerController? MyController = null;
 
-        public Eater(bool isAi, float mass, string name, Color color) 
+        public Eater(bool isAi, float mass, string name, Color color, bool isAnimated = false, SpriteName sprite = SpriteName.None) 
         {
             IsAI = isAi;
 
@@ -32,6 +33,9 @@ namespace AAAGR_io.GameAssets
 
             tag = "Eater";
             this.name = name;
+
+            this.IsAnimated = isAnimated;
+            SpriteName = sprite;
         }
         public override void OnSoulChange()
         {
@@ -85,6 +89,9 @@ namespace AAAGR_io.GameAssets
         public override void Update()
         {
             base.Update();
+
+            if(IsAnimated)
+                base.Animate();
 
             ControlMass();
         }

@@ -13,9 +13,6 @@ namespace AAAGR_io.Engine
         public static uint width = 1600;
         public static uint height = 900;
 
-        //Text
-        private static string projectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.Parent.FullName;
-
         private static Font font;
 
         private static Text scoreText;
@@ -27,7 +24,7 @@ namespace AAAGR_io.Engine
 
             window.SetFramerateLimit(wantedFrameRate);
 
-            font = new Font(projectDirectory + @"\Fonts\Oswald-Medium.ttf");
+            font = new Font(Game.PathToProject + @"\Fonts\Oswald-Medium.ttf");
 
             scoreText = new Text("Score: 0", font);
             massText = new Text("Mass: 0", font);

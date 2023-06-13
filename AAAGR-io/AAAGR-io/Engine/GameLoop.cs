@@ -5,8 +5,6 @@ namespace AAAGR_io.Engine
     {
         private Game game = new Game();
 
-        private static string pathToDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\AAAGR.io";
-
         public void LaunchGame()
         {
             game.InitGame();
@@ -20,6 +18,8 @@ namespace AAAGR_io.Engine
                     Time.ResetTimeBeforeUpdate();
 
                     DoGameStep();
+
+                    Thread.Sleep(1);
 
                     Time.UpdateTime();
                 }
@@ -74,9 +74,7 @@ namespace AAAGR_io.Engine
         {
             GameLoop gameLoop = new GameLoop();
 
-            gameLoop.game.InitInstance();
-
-            if (File.Exists(pathToDocuments + @"\config.txt"))
+            if (File.Exists(Game.PathToProject + @"\config.txt"))
                 LoadConfigs();
 
             return gameLoop;
@@ -85,7 +83,7 @@ namespace AAAGR_io.Engine
         #region Config loading
         private static void LoadConfigs()
         {
-            using (StreamReader sr = new StreamReader(pathToDocuments + @"\config.txt"))
+            using (StreamReader sr = new StreamReader(Game.PathToProject + @"\config.txt"))
             {
                 while (!sr.EndOfStream)
                 {
