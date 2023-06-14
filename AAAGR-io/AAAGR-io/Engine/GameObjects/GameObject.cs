@@ -69,7 +69,7 @@ namespace AAAGR_io.Engine.GameObjects
 
             if (animationTicks < 24)
             {
-                animationTicks += 24f / ((int)Render.wantedFrameRate);
+                animationTicks += Time.GetTime();
                 return;
             }
             

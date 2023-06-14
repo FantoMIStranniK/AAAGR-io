@@ -25,10 +25,6 @@ namespace AAAGR_io.GameAssets
 
             UniversalShape = body;
 
-            body.FillColor = color;
-            body.OutlineColor = Color.Black;
-            body.OutlineThickness = 6;
-
             this.mass = mass;
 
             tag = "Eater";
@@ -36,6 +32,14 @@ namespace AAAGR_io.GameAssets
 
             this.IsAnimated = isAnimated;
             SpriteName = sprite;
+
+            if(!isAnimated)
+            {
+                body.FillColor = color;
+            }
+
+            body.OutlineColor = Color.Black;
+            body.OutlineThickness = 6;
         }
         public override void OnSoulChange()
         {

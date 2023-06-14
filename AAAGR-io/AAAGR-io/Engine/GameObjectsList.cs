@@ -33,7 +33,7 @@ namespace AAAGR_io.Engine
         public void InitSpawn()
         {
             //Create main player
-            ProcessPlayer(false, Color.Magenta, 1.5f + rand.NextSingle(), "MainPlayer", true, SpriteName.Color);
+            ProcessPlayer(false, Color.Magenta, 1.5f + rand.NextSingle(), "MainPlayer", true, SpriteName.Skull);
 
             for(int i = 0; i < countOfFoodPoints; i++)
                 SpawnFood();
@@ -63,7 +63,7 @@ namespace AAAGR_io.Engine
 
             if(needForPlayer)
             {
-                ProcessPlayer(false, Color.Magenta, 1.5f + rand.NextSingle(), "MainPlayer");
+                ProcessPlayer(false, Color.Magenta, 1.5f + rand.NextSingle(), "MainPlayer", true, SpriteName.Skull);
                 needForPlayer = false;
             }
 
