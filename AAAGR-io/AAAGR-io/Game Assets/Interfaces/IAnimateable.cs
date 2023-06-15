@@ -8,6 +8,7 @@ namespace AAAGR_io.Game_Assets.Interfaces
         None,
         Skull,
         Color,
+        Zergling,
     }
     public interface IAnimateable
     {

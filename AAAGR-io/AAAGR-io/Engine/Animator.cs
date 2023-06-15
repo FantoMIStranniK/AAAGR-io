@@ -26,9 +26,9 @@ namespace AAAGR_io.Engine
         }
         public void UpdateAnimation()
         {
-            if(animationTicks < 24)
+            if(animationTicks < 1)
             {
-                animationTicks += (Render.wantedFrameRate / 24) * Time.GetTime();
+                animationTicks += 24f / Render.wantedFrameRate;
                 return;
             }
 
