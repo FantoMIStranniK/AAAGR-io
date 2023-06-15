@@ -30,16 +30,15 @@ namespace AAAGR_io.GameAssets
             tag = "Eater";
             this.name = name;
 
-            this.IsAnimated = isAnimated;
-            SpriteName = sprite;
-
-            if(!isAnimated)
-            {
-                body.FillColor = color;
-            }
+            IsAnimated = isAnimated;
 
             body.OutlineColor = Color.Black;
             body.OutlineThickness = 6;
+
+            if (!isAnimated)
+                body.FillColor = color;
+            else
+                animator = new Animator(sprite, UniversalShape);
         }
         public override void OnSoulChange()
         {
@@ -94,8 +93,8 @@ namespace AAAGR_io.GameAssets
         {
             base.Update();
 
-            if(IsAnimated)
-                base.Animate();
+            if (IsAnimated)
+                animator.UpdateAnimation();
 
             ControlMass();
         }

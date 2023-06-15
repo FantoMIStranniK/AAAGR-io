@@ -29,20 +29,15 @@ namespace AAAGR_io.Engine.GameObjects
 
         public bool isAlive = true;
 
+        public bool IsAnimated = false;
+
         public Shape UniversalShape { get; protected set; }
+
+        protected Animator animator;
 
         protected bool awakened = false;
         #endregion
 
-        #region Animation variables
-        public bool IsAnimated = false;
-
-        public SpriteName SpriteName { get; protected set; }
-
-        public int CurrentFrame { get; protected set; } = 1;
-
-        protected float animationTicks = 0;
-        #endregion
 
         #region Methods
         public void TryEat(Shape thisShape, GameObject collided)
@@ -62,37 +57,10 @@ namespace AAAGR_io.Engine.GameObjects
             return intetsects && massIsBigger && collidedIsAlive;
         }
         public virtual void Eat(GameObject food) { }
-        public virtual void Animate() 
-        {
-            if (SpriteName == SpriteName.None)
-                return;
-
-            if (animationTicks < 24)
-            {
-                animationTicks += Time.GetTime();
-                return;
-            }
-            
-            animationTicks = 0;
-
-            if (CurrentFrame >= 25)
-                CurrentFrame = 1;
-
-            string pathToSprite = Game.PathToProject + @"\Sprites\" + SpriteName.ToString() + @"\Frame" + CurrentFrame + @".png";
-
-            CurrentFrame++;
-
-            if (!File.Exists(pathToSprite))
-                return;
-
-            Texture texture = new Texture(pathToSprite);
-
-            UniversalShape.Texture = texture;
-
-        }
         public virtual void Move(Vector2f newPosition) { }
         public virtual void Awake() { }
         public virtual void Update() { }
+        public Animator GetAnimator() => animator;
         public virtual void OnSoulChange() { }
         public virtual void Destroy()
         {

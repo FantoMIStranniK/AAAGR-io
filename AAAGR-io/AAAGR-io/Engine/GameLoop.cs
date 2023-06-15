@@ -5,6 +5,8 @@ namespace AAAGR_io.Engine
     {
         private Game game = new Game();
 
+        private static string pathToDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\AAAGR.io";
+
         public void LaunchGame()
         {
             game.InitGame();
@@ -74,7 +76,8 @@ namespace AAAGR_io.Engine
         {
             GameLoop gameLoop = new GameLoop();
 
-            if (File.Exists(Game.PathToProject + @"\config.txt"))
+
+            if (File.Exists(pathToDocuments + @"\config.txt"))
                 LoadConfigs();
 
             return gameLoop;
@@ -83,18 +86,18 @@ namespace AAAGR_io.Engine
         #region Config loading
         private static void LoadConfigs()
         {
-            using (StreamReader sr = new StreamReader(Game.PathToProject + @"\config.txt"))
+            using (StreamReader sr = new StreamReader(pathToDocuments + @"\config.txt"))
             {
                 while (!sr.EndOfStream)
                 {
-                    var input = sr.ReadLine().Split("::");
+                    var input = sr.ReadLine()?.Split("::");
 
-                    if (input.Length >= 3)
-                        ProcessConfigLine(input[0], input[1], input[2], input[3]);
+                    if (input.Length >= 2)
+                        ProcessConfigLine(input[0], input[1], input[2]);
                 }
             }
         }
-        private static void ProcessConfigLine(string className, string varType, string varName, string configValue)
+        private static void ProcessConfigLine(string className, string varName, string configValue)
         {
             Type type;
 
@@ -112,17 +115,11 @@ namespace AAAGR_io.Engine
 
             var field = type.GetField(varName);
 
-            switch(varType)
-            {
-                case "uint":
-                    if (uint.TryParse(configValue, out uint value))
-                        field?.SetValue(null, value);
-                    break;
-                case "int":
-                    if(int.TryParse(configValue, out int value1))
-                        field?.SetValue(null, value1); 
-                    break;
-            }
+            var varIype = Convert.GetTypeCode(field?.GetValue(null));
+
+            var parsedValue = Convert.ChangeType(configValue, varIype);
+
+            field?.SetValue(null, parsedValue);
         }
         #endregion
     }

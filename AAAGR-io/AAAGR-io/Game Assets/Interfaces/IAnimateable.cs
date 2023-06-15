@@ -1,4 +1,6 @@
 ﻿
+using AAAGR_io.Engine;
+
 namespace AAAGR_io.Game_Assets.Interfaces
 {
     public enum SpriteName
@@ -9,6 +11,6 @@ namespace AAAGR_io.Game_Assets.Interfaces
     }
     public interface IAnimateable
     {
-        public void Animate(){}
+        public Animator GetAnimator();
     }
 }
