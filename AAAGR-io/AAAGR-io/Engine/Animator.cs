@@ -21,12 +21,8 @@ namespace AAAGR_io.Engine
 
             animateableShape = animateAbleshape;
 
-            string pathToSprites = Game.PathToProject + @"\Sprites\" + ThisSpriteName;
-
-            string[] spriteNames = Directory.GetFiles(pathToSprites);
-
-            foreach(var sprite in spriteNames)
-                sprites.Add(new Texture(sprite));
+            if(spriteName != SpriteName.None)
+                InitAnimator();
         }
         public void UpdateAnimation()
         {
@@ -49,6 +45,15 @@ namespace AAAGR_io.Engine
             currentFrame++;
 
             animateableShape.Texture = texture;
+        }
+        private void InitAnimator()
+        {
+            string pathToSprites = Game.PathToProject + @"\Sprites\" + ThisSpriteName;
+
+            string[] spriteNames = Directory.GetFiles(pathToSprites);
+
+            foreach (var sprite in spriteNames)
+                sprites.Add(new Texture(sprite));
         }
     }
 }
