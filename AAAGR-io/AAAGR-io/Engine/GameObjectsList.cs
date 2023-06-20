@@ -33,7 +33,7 @@ namespace AAAGR_io.Engine
         public void InitSpawn()
         {
             //Create main player
-            ProcessPlayer(false, Color.Magenta, 1.5f + rand.NextSingle(), "MainPlayer", true, SpriteName.Zergling);
+            ProcessPlayer(false, Color.Magenta, 1.5f + rand.NextSingle(), "MainPlayer");
 
             for(int i = 0; i < countOfFoodPoints; i++)
                 SpawnFood();
@@ -63,7 +63,7 @@ namespace AAAGR_io.Engine
 
             if(needForPlayer)
             {
-                ProcessPlayer(false, Color.Magenta, 1.5f + rand.NextSingle(), "MainPlayer", true, SpriteName.Zergling);
+                ProcessPlayer(false, Color.Magenta, 1.5f + rand.NextSingle(), "MainPlayer");
                 needForPlayer = false;
             }
 
@@ -134,9 +134,11 @@ namespace AAAGR_io.Engine
 
             return colors[rand.Next(colors.Count)];
         }
-        private void ProcessPlayer(bool isAI, Color color, float mass, string name = "default", bool isAnimated = false, SpriteName sprite = SpriteName.None)
+        private void ProcessPlayer(bool isAI, Color color, float mass, string name = "default")
         {
-            var player = CreatePlayer(isAI, color, mass, name, isAnimated, sprite);
+            bool isAnimated = rand.NextSingle() >= 0.5f ? true : false; 
+
+            var player = CreatePlayer(isAI, color, mass, name, isAnimated);
 
             var controller = new PlayerController(isAI);
 
@@ -154,11 +156,18 @@ namespace AAAGR_io.Engine
             if(!initedPlayers)
                 PlayerControllers.Add(controller);
         }
-        private Eater CreatePlayer(bool isAI, Color color, float mass, string name, bool isAnimated, SpriteName sprite)
+        private Eater CreatePlayer(bool isAI, Color color, float mass, string name, bool isAnimated)
         {
+            SpriteName[] spriteNames;
+
+            if (isAnimated)
+                spriteNames = (SpriteName[])Enum.GetValues(typeof(SpriteName));
+            else
+                spriteNames = new SpriteName[] {SpriteName.None};
+
             string playerName = name;
 
-            Eater player = new Eater(isAI, mass, playerName, color, isAnimated, sprite);
+            Eater player = new Eater(isAI, mass, playerName, color, isAnimated, spriteNames[rand.Next(0, spriteNames.Length)]);
 
             return player;
         }

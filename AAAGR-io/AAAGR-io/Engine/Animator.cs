@@ -26,6 +26,9 @@ namespace AAAGR_io.Engine
         }
         public void UpdateAnimation()
         {
+            if (ThisSpriteName == SpriteName.None)
+                return;
+
             if(animationTicks < 1)
             {
                 animationTicks += 24f / Render.wantedFrameRate;

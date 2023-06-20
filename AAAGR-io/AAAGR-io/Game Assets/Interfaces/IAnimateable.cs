@@ -9,6 +9,7 @@ namespace AAAGR_io.Game_Assets.Interfaces
         Skull,
         Color,
         Zergling,
+        Infestor,
     }
     public interface IAnimateable
     {

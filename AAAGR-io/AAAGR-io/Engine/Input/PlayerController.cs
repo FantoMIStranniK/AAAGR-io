@@ -40,6 +40,8 @@ namespace AAAGR_io.Engine.Input
         {
             prevPositon = bodyPosition;
             estaminatedPosition = bodyPosition;
+
+            countOfTicks = 120;
         }
         public void GetInput()
         {

@@ -32,7 +32,11 @@ namespace AAAGR_io.GameAssets
 
             IsAnimated = isAnimated;
 
-            body.OutlineColor = Color.Black;
+            if(isAi)
+                body.OutlineColor = Color.Black;
+            else
+                body.OutlineColor = Color.Red;
+
             body.OutlineThickness = 6;
 
             if (!isAnimated)
