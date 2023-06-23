@@ -1,6 +1,8 @@
-﻿using AAAGR_io.GameAssets;
+﻿using AAAGR_io.Engine.GameObjects;
+using AAAGR_io.GameAssets;
 using SFML.System;
 using SFML.Window;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AAAGR_io.Engine.Input
 {
@@ -25,6 +27,8 @@ namespace AAAGR_io.Engine.Input
 
         private int countOfTicks = 120;
 
+        private Random rand = new Random();
+
         public PlayerController(bool isAi)
         {
             IsAi = isAi;
@@ -48,7 +52,7 @@ namespace AAAGR_io.Engine.Input
                 () => ProcessNewCoordinate(new Vector2f(-3, 0));
 
             KeyBinds[InputType.SoulChange].OnKeyDown +=
-                () => ControlledGameObject?.ChangeSoul();
+                () => ChangeSoul();
         }
 
         public void SetNewGameObject(Eater gameObject)
@@ -61,6 +65,12 @@ namespace AAAGR_io.Engine.Input
             targetPosition = estaminatedPosition;
 
             countOfTicks = 120;
+        }
+        public void ChangeMode()
+        {
+            IsAi = !IsAi;
+
+            ControlledGameObject?.ChangeMode();
         }
         public void ResetGameObject()
             => ControlledGameObject = null;
@@ -76,8 +86,8 @@ namespace AAAGR_io.Engine.Input
             if (ControlledGameObject == null)
                 return;
 
-            if (IsAi) ;
-            //AiInput();
+            if (IsAi)
+                AiInput();
             else
                 foreach (var key in KeyBinds.Values)
                     key.GetInput();
@@ -99,6 +109,46 @@ namespace AAAGR_io.Engine.Input
         }
         public bool IsValidCoordinate(float coordinate, float limit)
             => coordinate > 0 && coordinate < limit;
+        private void ChangeSoul()
+        {
+            PlayerController randomController;
+
+            int randomIndex = 0;
+
+            var controllers = Game.Instance.GameObjectsList.PlayerControllers;
+
+            do
+            {
+                randomIndex = rand.Next(0, controllers.Count);
+
+                randomController = controllers[randomIndex];
+            }
+            while (IsInvalidController(randomController));
+
+            var formerControlledObject = ControlledGameObject;
+
+            formerControlledObject.MyController = randomController;
+            randomController.ControlledGameObject.MyController = this;
+
+            SetNewGameObject(randomController.ControlledGameObject);
+            ChangeMode();
+
+            randomController.SetNewGameObject(formerControlledObject);
+            randomController.ChangeMode();
+        }
+        private bool IsInvalidController(PlayerController controller)
+        {
+            if(controller.ControlledGameObject == null)
+                return true;
+
+            if (!controller.ControlledGameObject.isAlive)
+                return true;
+
+            if (controller.ControlledGameObject?.name == ControlledGameObject?.name)
+                return true;
+
+            return false;
+        }
 
         public void AiInput()
         {

@@ -151,7 +151,8 @@ namespace AAAGR_io.Engine
 
             GameObjects.Add(listedGameObject);
 
-            controller.SetNewGameObject((Eater)GetPlayer(player));
+            controller?.SetNewGameObject((Eater)GetPlayer(player));
+
 
             if(!initedPlayers)
                 PlayerControllers.Add(controller);

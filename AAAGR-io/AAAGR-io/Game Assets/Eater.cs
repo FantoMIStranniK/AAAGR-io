@@ -9,7 +9,7 @@ using AAAGR_io.Engine.Audio;
 
 namespace AAAGR_io.GameAssets
 {
-    public class Eater : GameObject, IEat
+    public class Eater : GameObject
     {
         public bool IsAI { get; private set; } = false;
 
@@ -19,8 +19,14 @@ namespace AAAGR_io.GameAssets
 
         public Eater(bool isAi, float mass, string name, Color color, bool isAnimated = false, SpriteName sprite = SpriteName.None) 
         {
-            IsAI = isAi;
+            //Setting variables
+            this.IsAI = isAi;
+            this.IsAnimated = isAnimated;
 
+            this.tag = "Eater";
+            this.name = name;
+
+            //Shape generation
             body = new CircleShape(25f);
 
             body.Origin = new Vector2f(body.Radius, body.Radius);
@@ -29,51 +35,19 @@ namespace AAAGR_io.GameAssets
 
             this.mass = mass;
 
-            this.tag = "Eater";
-            this.name = name;
-
-            IsAnimated = isAnimated;
-
-            if(isAi)
+            //Colors
+            if (isAi)
                 body.OutlineColor = Color.Black;
             else
                 body.OutlineColor = Color.Red;
 
             body.OutlineThickness = 6;
 
+
             if (!isAnimated)
                 body.FillColor = color;
             else
                 animator = new Animator(sprite, UniversalShape);
-        }
-        public override void OnSoulChange()
-        {
-            if(IsAI)
-                body.FillColor = Color.Magenta;
-            else
-                body.FillColor = Color.Black;
-
-            IsAI = !IsAI;
-        }
-        public void ChangeSoul()
-        {
-            List<ListedGameObject> players = Game.Instance.GameObjectsList.GetPlayerList();
-
-            Random rand = new Random();
-
-            ListedGameObject chosenOne;
-
-            do
-            {
-                int index = rand.Next(0, players.Count);
-
-                chosenOne = players[index];
-            }
-            while (chosenOne.GameObjectPair.Item1 == this.name || !chosenOne.GameObjectPair.Item2.isAlive);
-
-            OnSoulChange();
-
-            chosenOne.GameObjectPair.Item2.OnSoulChange();
         }
 
         #region Overrides
@@ -146,6 +120,9 @@ namespace AAAGR_io.GameAssets
                 Render.UpdateMassText(mass);
         }
         #endregion
+
+        public void ChangeMode()
+            => IsAI = !IsAI;
 
         #region MassControl
         private void ControlMass()
