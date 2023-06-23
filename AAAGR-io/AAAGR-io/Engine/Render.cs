@@ -47,7 +47,15 @@ namespace AAAGR_io.Engine
             DrawGameObjects(gameObjects);
 
             window.Display();
-        } 
+        }
+        public static Shape AddBounds(Vector2f aa)
+        {
+            RectangleShape shape = new RectangleShape(aa);
+
+            shape.FillColor = Color.Cyan;
+
+            return shape;
+        }
         public static void TryClose()
         {
             window.Closed += WindowClosed;
@@ -71,6 +79,9 @@ namespace AAAGR_io.Engine
             foreach (var gameObject in gameObjects)
             {
                 window.Draw(gameObject.GameObjectPair.Item2.UniversalShape);
+
+                /*if(gameObject.GameObjectPair.Item2.bounds != null)
+                    window.Draw(gameObject.GameObjectPair.Item2.bounds);*/
             }
 
             window.Draw(massText);

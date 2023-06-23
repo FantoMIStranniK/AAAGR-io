@@ -20,9 +20,6 @@ namespace AAAGR_io.Engine
             ThisSpriteName = spriteName;
 
             animateableShape = animateAbleshape;
-
-            if(spriteName != SpriteName.None)
-                InitAnimator();
         }
         public void UpdateAnimation()
         {
@@ -46,8 +43,11 @@ namespace AAAGR_io.Engine
 
             animateableShape.Texture = texture;
         }
-        private void InitAnimator()
+        public void InitAnimator()
         {
+            if (ThisSpriteName == SpriteName.None)
+                return;
+
             string pathToSprites = Game.PathToProject + @"\Sprites\" + ThisSpriteName;
 
             string[] spriteNames = Directory.GetFiles(pathToSprites);

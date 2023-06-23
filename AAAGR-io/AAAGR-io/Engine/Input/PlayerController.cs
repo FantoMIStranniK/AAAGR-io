@@ -6,6 +6,15 @@ namespace AAAGR_io.Engine.Input
 {
     public class PlayerController
     {
+        public Dictionary<InputType, KeyBind> KeyBinds = new Dictionary<InputType, KeyBind>
+        {
+            {InputType.Up, new KeyBind(Keyboard.Key.W)},
+            {InputType.Down, new KeyBind(Keyboard.Key.S)},
+            {InputType.Left, new KeyBind(Keyboard.Key.A)},
+            {InputType.Right, new KeyBind(Keyboard.Key.D)},
+            {InputType.SoulChange, new KeyBind(Keyboard.Key.F)},
+        };
+
         public bool IsAi { get; private set; } = false;
 
         public Eater? ControlledGameObject { get; private set; } = null;
@@ -21,6 +30,25 @@ namespace AAAGR_io.Engine.Input
             IsAi = isAi;
 
             ControlledGameObject = null;
+
+            BindActions();
+        }
+        private void BindActions()
+        {
+            KeyBinds[InputType.Up].OnKeyDown += 
+                () => ProcessNewCoordinate(new Vector2f(0, -3));
+
+            KeyBinds[InputType.Down].OnKeyDown +=
+                () => ProcessNewCoordinate(new Vector2f(0, 3));
+
+            KeyBinds[InputType.Right].OnKeyDown +=
+                () => ProcessNewCoordinate(new Vector2f(3, 0));
+
+            KeyBinds[InputType.Left].OnKeyDown +=
+                () => ProcessNewCoordinate(new Vector2f(-3, 0));
+
+            KeyBinds[InputType.SoulChange].OnKeyDown +=
+                () => ControlledGameObject?.ChangeSoul();
         }
 
         public void SetNewGameObject(Eater gameObject)
@@ -48,28 +76,19 @@ namespace AAAGR_io.Engine.Input
             if (ControlledGameObject == null)
                 return;
 
-            if (IsAi)
-                AiInput();
+            if (IsAi) ;
+            //AiInput();
             else
-                HumanInput();
+                foreach (var key in KeyBinds.Values)
+                    key.GetInput();
 
             ControlledGameObject?.Move(estaminatedPosition);
         }
-        public void HumanInput()
+        private void ProcessNewCoordinate(Vector2f shit)
         {
-            Vector2f newPosition = ControlledGameObject.body.Position;
+            Vector2f newPosition = ControlledGameObject.UniversalShape.Position;
 
-            if (Keyboard.IsKeyPressed(Keyboard.Key.W))
-                newPosition = new Vector2f(newPosition.X, newPosition.Y - 3 * Time.GetTime() / ControlledGameObject.mass);
-
-            if (Keyboard.IsKeyPressed(Keyboard.Key.A))
-                newPosition = new Vector2f(newPosition.X - 3 * Time.GetTime() / ControlledGameObject.mass, newPosition.Y);
-
-            if (Keyboard.IsKeyPressed(Keyboard.Key.S))
-                newPosition = new Vector2f(newPosition.X, newPosition.Y + 3 * Time.GetTime() / ControlledGameObject.mass);
-
-            if (Keyboard.IsKeyPressed(Keyboard.Key.D))
-                newPosition = new Vector2f(newPosition.X + 3 * Time.GetTime() / ControlledGameObject.mass, newPosition.Y);
+            newPosition += new Vector2f(shit.X * Time.GetTime() / ControlledGameObject.mass, shit.Y * Time.GetTime() / ControlledGameObject.mass);
 
             if (!IsValidCoordinate(newPosition.X - ControlledGameObject.body.Radius * ControlledGameObject.mass, Render.width - ControlledGameObject.body.Radius * 2 * ControlledGameObject.mass))
                 newPosition.X = ControlledGameObject.body.Position.X;
@@ -77,14 +96,6 @@ namespace AAAGR_io.Engine.Input
                 newPosition.Y = ControlledGameObject.body.Position.Y;
 
             estaminatedPosition = newPosition;
-
-            /*
-            if (Keyboard.IsKeyPressed(Keyboard.Key.F) && !changedSoul)
-            {
-                ChangeSoul();
-                changedSoul = true;
-            }
-            */
         }
         public bool IsValidCoordinate(float coordinate, float limit)
             => coordinate > 0 && coordinate < limit;

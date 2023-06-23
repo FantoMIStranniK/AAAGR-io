@@ -1,4 +1,5 @@
-﻿using AAAGR_io.Engine.Input;
+﻿using AAAGR_io.Engine.Audio;
+using AAAGR_io.Engine.Input;
 
 namespace AAAGR_io.Engine
 {
@@ -30,6 +31,8 @@ namespace AAAGR_io.Engine
             Instance = this;
 
             Render.InitRender();
+
+            AudioSystem.InitAudioFiles();
 
             Time.StartTime();
 

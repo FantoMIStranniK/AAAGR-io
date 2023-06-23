@@ -38,6 +38,7 @@ namespace AAAGR_io.Engine.GameObjects
         protected bool awakened = false;
         #endregion
 
+        public Shape bounds;
 
         #region Methods
         public void TryEat(Shape thisShape, GameObject collided)
@@ -58,8 +59,22 @@ namespace AAAGR_io.Engine.GameObjects
         }
         public virtual void Eat(GameObject food) { }
         public virtual void Move(Vector2f newPosition) { }
-        public virtual void Awake() { }
-        public virtual void Update() { }
+        public virtual void Awake() 
+        {
+            if (tag != "Eater")
+                return;
+
+            var thisBounds = UniversalShape.GetGlobalBounds();
+
+            bounds = Render.AddBounds(new Vector2f(thisBounds.Width, thisBounds.Height));
+        }
+        public virtual void Update()
+        {
+            if (tag != "Eater")
+                return;
+
+            bounds.Position = new Vector2f(UniversalShape.GetGlobalBounds().Left, UniversalShape.GetGlobalBounds().Top);
+        }
         public Animator GetAnimator() => animator;
         public virtual void OnSoulChange() { }
         public virtual void Destroy()

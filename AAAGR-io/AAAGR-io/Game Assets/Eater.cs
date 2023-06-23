@@ -4,10 +4,11 @@ using AAAGR_io.Engine;
 using AAAGR_io.Engine.GameObjects;
 using AAAGR_io.Engine.Input;
 using AAAGR_io.Game_Assets.Interfaces;
+using AAAGR_io.GameAssets.Interfaces;
 
 namespace AAAGR_io.GameAssets
 {
-    public class Eater : GameObject
+    public class Eater : GameObject, IEat
     {
         public bool IsAI { get; private set; } = false;
 
@@ -27,7 +28,7 @@ namespace AAAGR_io.GameAssets
 
             this.mass = mass;
 
-            tag = "Eater";
+            this.tag = "Eater";
             this.name = name;
 
             IsAnimated = isAnimated;
@@ -82,6 +83,12 @@ namespace AAAGR_io.GameAssets
             if (awakened)
                 return;
 
+            if (animator.ThisSpriteName == SpriteName.None)
+                IsAnimated = false;
+
+            if(IsAnimated)
+                animator.InitAnimator();
+
             awakened = true;
 
             Random rand = new Random();
@@ -118,8 +125,6 @@ namespace AAAGR_io.GameAssets
         }
         public override void Eat(GameObject food)
         {
-            base.Eat(food);
-
             if (food.tag is "food")
                 mass += (food.mass * 0.2f) / mass;
             else if (food.tag is "Eater")

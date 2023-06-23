@@ -1,4 +1,6 @@
 ﻿
+using AAAGR_io.Engine.Audio;
+
 namespace AAAGR_io.Engine
 {
     public class GameLoop
@@ -10,6 +12,8 @@ namespace AAAGR_io.Engine
         public void LaunchGame()
         {
             game.InitGame();
+
+            AudioSystem.PlaySound("Govno");
 
             while (Render.window.IsOpen)
             {
