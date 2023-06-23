@@ -13,8 +13,6 @@ namespace AAAGR_io.Engine
         {
             game.InitGame();
 
-            AudioSystem.PlaySound("Govno");
-
             while (Render.window.IsOpen)
             {
                 Time.UpdateSystemTime();

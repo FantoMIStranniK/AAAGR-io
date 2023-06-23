@@ -5,6 +5,7 @@ using AAAGR_io.Engine.GameObjects;
 using AAAGR_io.Engine.Input;
 using AAAGR_io.Game_Assets.Interfaces;
 using AAAGR_io.GameAssets.Interfaces;
+using AAAGR_io.Engine.Audio;
 
 namespace AAAGR_io.GameAssets
 {
@@ -83,9 +84,6 @@ namespace AAAGR_io.GameAssets
             if (awakened)
                 return;
 
-            if (animator.ThisSpriteName == SpriteName.None)
-                IsAnimated = false;
-
             if(IsAnimated)
                 animator.InitAnimator();
 
@@ -126,9 +124,15 @@ namespace AAAGR_io.GameAssets
         public override void Eat(GameObject food)
         {
             if (food.tag is "food")
+            {
                 mass += (food.mass * 0.2f) / mass;
+                AudioSystem.PlaySound("EatSound", false, 2, 1f, 0.95f);
+            }
             else if (food.tag is "Eater")
+            {
                 mass += food.mass * 0.025f;
+                AudioSystem.PlaySound("DeathSound", true, 3, 1f, 0.95f);
+            }
 
             food.isAlive = false;
 
