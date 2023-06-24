@@ -2,7 +2,6 @@
 using AAAGR_io.GameAssets;
 using SFML.System;
 using SFML.Window;
-using System.Diagnostics.CodeAnalysis;
 
 namespace AAAGR_io.Engine.Input
 {
@@ -25,6 +24,10 @@ namespace AAAGR_io.Engine.Input
         public Vector2f prevPositon = new Vector2f();
         public Vector2f targetPosition = new Vector2f();
 
+        private Vector2f newDirection;
+
+        private float directionModifier = 2f;
+
         private int countOfTicks = 120;
 
         private Random rand = new Random();
@@ -40,21 +43,22 @@ namespace AAAGR_io.Engine.Input
         private void BindActions()
         {
             KeyBinds[InputType.Up].OnKeyDown += 
-                () => ProcessNewCoordinate(new Vector2f(0, -3));
+                () => newDirection.Y = -directionModifier;
 
             KeyBinds[InputType.Down].OnKeyDown +=
-                () => ProcessNewCoordinate(new Vector2f(0, 3));
+                () => newDirection.Y = directionModifier;
 
             KeyBinds[InputType.Right].OnKeyDown +=
-                () => ProcessNewCoordinate(new Vector2f(3, 0));
+                () => newDirection.X = directionModifier;
 
             KeyBinds[InputType.Left].OnKeyDown +=
-                () => ProcessNewCoordinate(new Vector2f(-3, 0));
+                () => newDirection.X = -directionModifier;
 
             KeyBinds[InputType.SoulChange].OnKeyDown +=
                 () => ChangeSoul();
         }
 
+        #region Setup methods
         public void SetNewGameObject(Eater gameObject)
         {
             ControlledGameObject = gameObject;
@@ -81,6 +85,9 @@ namespace AAAGR_io.Engine.Input
 
             countOfTicks = 120;
         }
+        #endregion
+
+        #region Input
         public void GetInput()
         {
             if (ControlledGameObject == null)
@@ -91,14 +98,37 @@ namespace AAAGR_io.Engine.Input
             else
                 foreach (var key in KeyBinds.Values)
                     key.GetInput();
+        }
+        public void AiInput()
+        {
+            Random rand = new Random();
+
+            if (countOfTicks >= 120)
+            {
+                prevPositon = ControlledGameObject.UniversalShape.Position;
+                targetPosition = new Vector2f(rand.Next(50, (int)Render.width), rand.Next(50, (int)Render.height));
+                countOfTicks = 0;
+            }
+            else
+            {
+                estaminatedPosition += (targetPosition - prevPositon) * Time.GetTime() / 1000;
+                countOfTicks++;
+            }
+        }
+        #endregion
+
+        #region Movement
+        public void MoveCharacter()
+        {
+            ProcessNewPosition();
 
             ControlledGameObject?.Move(estaminatedPosition);
         }
-        private void ProcessNewCoordinate(Vector2f shit)
+        private void ProcessNewPosition()
         {
             Vector2f newPosition = ControlledGameObject.UniversalShape.Position;
 
-            newPosition += new Vector2f(shit.X * Time.GetTime() / ControlledGameObject.mass, shit.Y * Time.GetTime() / ControlledGameObject.mass);
+            newPosition += new Vector2f(newDirection.X * Time.GetTime() / ControlledGameObject.mass, newDirection.Y * Time.GetTime() / ControlledGameObject.mass);
 
             if (!IsValidCoordinate(newPosition.X - ControlledGameObject.body.Radius * ControlledGameObject.mass, Render.width - ControlledGameObject.body.Radius * 2 * ControlledGameObject.mass))
                 newPosition.X = ControlledGameObject.body.Position.X;
@@ -106,9 +136,14 @@ namespace AAAGR_io.Engine.Input
                 newPosition.Y = ControlledGameObject.body.Position.Y;
 
             estaminatedPosition = newPosition;
+
+            newDirection = new Vector2f(0, 0);
         }
         public bool IsValidCoordinate(float coordinate, float limit)
             => coordinate > 0 && coordinate < limit;
+        #endregion
+
+        #region SoulChange
         private void ChangeSoul()
         {
             PlayerController randomController;
@@ -149,22 +184,6 @@ namespace AAAGR_io.Engine.Input
 
             return false;
         }
-
-        public void AiInput()
-        {
-            Random rand = new Random();
-
-            if (countOfTicks >= 120)
-            {
-                prevPositon = ControlledGameObject.UniversalShape.Position;
-                targetPosition = new Vector2f(rand.Next(50, (int)Render.width), rand.Next(50, (int)Render.height));
-                countOfTicks = 0;
-            }
-            else
-            {
-                estaminatedPosition += (targetPosition - prevPositon) * Time.GetTime() / 1000;
-                countOfTicks++;
-            }
-        }
+        #endregion
     }
 }

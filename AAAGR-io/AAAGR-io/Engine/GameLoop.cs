@@ -42,9 +42,7 @@ namespace AAAGR_io.Engine
         private void GetInput()
         {
             foreach (var controller in Game.Instance.GameObjectsList.PlayerControllers)
-            {
                 controller.GetInput();
-            }
         }
         private void UpdateGameObjects()
         {
@@ -53,9 +51,10 @@ namespace AAAGR_io.Engine
             game.GameObjectsList.DeleteGameObjects();
 
             foreach (var gameObject in game.GameObjectsList.GameObjects)
-            {
                 gameObject.GameObjectPair.Item2.Update();
-            }
+
+            foreach (var controller in game.GameObjectsList.PlayerControllers)
+                controller.MoveCharacter();
 
             //Check collisions
             foreach (var colliding in game.GameObjectsList.GameObjects)
